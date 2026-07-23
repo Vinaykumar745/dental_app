@@ -1,0 +1,46 @@
+name: dental_app
+description: Dental Cancer Detection App
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  fl_chart: ^0.69.0
+  image_picker: ^1.1.2
+  permission_handler: ^11.3.1
+  http: ^1.2.2
+  shared_preferences: ^2.3.2
+  intl: ^0.19.0
+  uuid: ^4.5.1
+  google_sign_in: ^6.2.1
+  pdf: ^3.10.8
+  path_provider: ^2.1.2
+  open_file: ^3.3.2
+  encrypt: ^5.0.3
+  google_mlkit_image_labeling: ^0.14.2
+  video_player: ^2.11.1
+  printing: ^5.14.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/animations/
+    - assets/videos/
+    - assets/i18n/

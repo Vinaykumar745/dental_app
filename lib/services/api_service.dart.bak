@@ -1,0 +1,378 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import '../models/patient_model.dart';
+import '../models/result_model.dart';
+
+class ApiService {
+  static const String baseUrl = 'http://127.0.0.1:8000';
+
+  static String? _token;
+
+  static Future<String?> getToken() async {
+    if (_token != null) return _token;
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('auth_token');
+    return _token;
+  }
+
+  static Future<void> saveToken(String token) async {
+    _token = token;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_token', token);
+  }
+
+  static Future<void> clearToken() async {
+    _token = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    await prefs.remove('user_name');
+    await prefs.remove('user_email');
+    await prefs.remove('user_photo');
+  }
+
+  static Future<Map<String, String>> _authHeaders() async {
+    final token = await getToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
+
+  // ── Sign Up ───────────────────────────────────────────────
+  static Future<ApiResult> signUp({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/auth/signup'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'name': name,
+              'email': email.toLowerCase().trim(),
+              'password': password,
+            }),
+          )
+          .timeout(const Duration(seconds: 60));
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        await saveToken(data['access_token']);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_name', data['user']['name']);
+        await prefs.setString('user_email', data['user']['email']);
+        return ApiResult(success: true, data: data);
+      }
+      return ApiResult(
+          success: false,
+          error: data['detail'] ?? 'Sign up failed. Please try again.');
+    } on SocketException {
+      return ApiResult(
+          success: false,
+          error: 'No internet connection. Please check your network.');
+    } catch (e) {
+      if (e.toString().contains('TimeoutException')) {
+        return ApiResult(
+            success: false,
+            error:
+                'Server is starting up. Please wait 30 seconds and try again.');
+      }
+      return ApiResult(success: false, error: 'Error: ${e.toString()}');
+    }
+  }
+
+  // ── Login ─────────────────────────────────────────────────
+  static Future<ApiResult> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/auth/login'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'email': email.toLowerCase().trim(),
+              'password': password,
+            }),
+          )
+          .timeout(const Duration(seconds: 60));
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        await saveToken(data['access_token']);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_name', data['user']['name']);
+        await prefs.setString('user_email', data['user']['email']);
+        return ApiResult(success: true, data: data);
+      } else if (response.statusCode == 401) {
+        final detail = data['detail'] ?? '';
+        if (detail.toLowerCase().contains('password')) {
+          return ApiResult(
+              success: false, error: 'Invalid Password. Please try again.');
+        }
+        return ApiResult(
+            success: false,
+            error: 'No account found with this email.');
+      }
+      return ApiResult(
+          success: false,
+          error: data['detail'] ?? 'Login failed. Please try again.');
+    } on SocketException {
+      return ApiResult(
+          success: false,
+          error: 'No internet connection. Please check your network.');
+    } catch (e) {
+      if (e.toString().contains('TimeoutException')) {
+        return ApiResult(
+            success: false,
+            error:
+                'Server is starting up. Please wait 30 seconds and try again.');
+      }
+      return ApiResult(success: false, error: 'Error: ${e.toString()}');
+    }
+  }
+
+  // ── Forgot Password ───────────────────────────────────────
+  static Future<ApiResult> forgotPassword(String email) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/auth/forgot-password'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'email': email.toLowerCase().trim()}),
+          )
+          .timeout(const Duration(seconds: 60));
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return ApiResult(success: true, data: data);
+      }
+      return ApiResult(success: false, error: data['detail'] ?? 'Failed to send reset code.');
+    } catch (e) {
+      if (e.toString().contains('TimeoutException')) {
+        return ApiResult(
+            success: false,
+            error:
+                'Server is starting up. Please wait 30 seconds and try again.');
+      }
+      return ApiResult(success: false, error: 'Error: ${e.toString()}');
+    }
+  }
+
+  // ── Reset Password ────────────────────────────────────────
+  static Future<ApiResult> resetPassword(String token, String newPassword) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/auth/reset-password'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'token': token, 'newPassword': newPassword}),
+          )
+          .timeout(const Duration(seconds: 60));
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return ApiResult(success: true, data: data);
+      }
+      return ApiResult(success: false, error: data['detail'] ?? 'Failed to reset password.');
+    } catch (e) {
+      if (e.toString().contains('TimeoutException')) {
+        return ApiResult(
+            success: false,
+            error:
+                'Server is starting up. Please wait 30 seconds and try again.');
+      }
+      return ApiResult(success: false, error: 'Error: ${e.toString()}');
+    }
+  }
+
+  // ── Google Login ──────────────────────────────────────────
+  static Future<ApiResult> googleLogin({
+    required String name,
+    required String email,
+    String? photoUrl,
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/auth/google-login'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'name': name,
+              'email': email.toLowerCase().trim(),
+              'photoUrl': photoUrl ?? '',
+            }),
+          )
+          .timeout(const Duration(seconds: 60));
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        await saveToken(data['access_token']);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_name', data['user']['name']);
+        await prefs.setString('user_email', data['user']['email']);
+        if (photoUrl != null) await prefs.setString('user_photo', photoUrl);
+        return ApiResult(success: true, data: data);
+      }
+      return ApiResult(
+          success: false,
+          error: data['detail'] ?? 'Google login failed.');
+    } on SocketException {
+      return ApiResult(
+          success: false, error: 'No internet connection.');
+    } catch (e) {
+      if (e.toString().contains('TimeoutException')) {
+        return ApiResult(
+            success: false,
+            error:
+                'Server is starting up. Please wait 30 seconds and try again.');
+      }
+      return ApiResult(success: false, error: 'Error: ${e.toString()}');
+    }
+  }
+
+  // ── Logout ────────────────────────────────────────────────
+  static Future<void> logout() async {
+    await clearToken();
+  }
+
+  // ── Get current user ──────────────────────────────────────
+  static Future<ApiResult> getCurrentUser() async {
+    try {
+      final headers = await _authHeaders();
+      final response = await http
+          .get(Uri.parse('$baseUrl/auth/me'), headers: headers)
+          .timeout(const Duration(seconds: 30));
+      if (response.statusCode == 200) {
+        return ApiResult(success: true, data: jsonDecode(response.body));
+      }
+      return ApiResult(success: false, error: 'Session expired.');
+    } catch (e) {
+      return ApiResult(success: false, error: e.toString());
+    }
+  }
+
+  // ── Save patient ──────────────────────────────────────────
+  static Future<ApiResult> savePatient(PatientModel patient) async {
+    try {
+      final headers = await _authHeaders();
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/patients'),
+            headers: headers,
+            body: jsonEncode(patient.toMap()),
+          )
+          .timeout(const Duration(seconds: 30));
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ApiResult(success: true, data: data);
+      }
+      return ApiResult(
+          success: false,
+          error: data['detail'] ?? 'Failed to save patient.');
+    } catch (e) {
+      return ApiResult(success: false, error: e.toString());
+    }
+  }
+
+  // ── Get all patients ──────────────────────────────────────
+  static Future<ApiResult> getPatients() async {
+    try {
+      final headers = await _authHeaders();
+      final response = await http
+          .get(Uri.parse('$baseUrl/patients'), headers: headers)
+          .timeout(const Duration(seconds: 30));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final patients = data.map((e) => PatientModel.fromMap(e)).toList();
+        return ApiResult(success: true, data: patients);
+      }
+      return ApiResult(success: false, error: 'Failed to load patients.');
+    } catch (e) {
+      return ApiResult(success: false, error: e.toString());
+    }
+  }
+
+  // ── Save scan result ──────────────────────────────────────
+  static Future<ApiResult> saveScanResult({
+    required String patientId,
+    required ScanResult result,
+  }) async {
+    try {
+      final headers = await _authHeaders();
+      final body = result.toMap();
+      body['patientId'] = patientId;
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl/scans'),
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 30));
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return ApiResult(success: true, data: data);
+      }
+      return ApiResult(
+          success: false,
+          error: data['detail'] ?? 'Failed to save scan.');
+    } catch (e) {
+      return ApiResult(success: false, error: e.toString());
+    }
+  }
+
+  // ── Get all scans ─────────────────────────────────────────
+  static Future<ApiResult> getAllScans() async {
+    try {
+      final headers = await _authHeaders();
+      final response = await http
+          .get(Uri.parse('$baseUrl/scans'), headers: headers)
+          .timeout(const Duration(seconds: 30));
+      if (response.statusCode == 200) {
+        return ApiResult(success: true, data: jsonDecode(response.body));
+      }
+      return ApiResult(success: false, error: 'Failed to load scans.');
+    } catch (e) {
+      return ApiResult(success: false, error: e.toString());
+    }
+  }
+
+  // ── Get patient scans ─────────────────────────────────────
+  static Future<ApiResult> getPatientScans(String patientId) async {
+    try {
+      final headers = await _authHeaders();
+      final response = await http
+          .get(Uri.parse('$baseUrl/scans/$patientId'), headers: headers)
+          .timeout(const Duration(seconds: 30));
+      if (response.statusCode == 200) {
+        return ApiResult(success: true, data: jsonDecode(response.body));
+      }
+      return ApiResult(success: false, error: 'Failed to load scans.');
+    } catch (e) {
+      return ApiResult(success: false, error: e.toString());
+    }
+  }
+
+  // ── Dashboard stats ───────────────────────────────────────
+  static Future<ApiResult> getDashboardStats() async {
+    try {
+      final headers = await _authHeaders();
+      final response = await http
+          .get(Uri.parse('$baseUrl/dashboard/stats'), headers: headers)
+          .timeout(const Duration(seconds: 30));
+      if (response.statusCode == 200) {
+        return ApiResult(success: true, data: jsonDecode(response.body));
+      }
+      return ApiResult(success: false, error: 'Failed to load stats.');
+    } catch (e) {
+      return ApiResult(success: false, error: e.toString());
+    }
+  }
+}
+
+class ApiResult {
+  final bool success;
+  final dynamic data;
+  final String? error;
+  ApiResult({required this.success, this.data, this.error});
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DentalScan AI - Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="ri-pulse-line logo-icon"></i>
+                <h2>DentalScan AI</h2>
+            </div>
+            <nav>
+                <a href="#" class="active"><i class="ri-dashboard-line"></i> Dashboard</a>
+                <a href="#"><i class="ri-group-line"></i> Patients</a>
+                <a href="#"><i class="ri-file-list-3-line"></i> Recent Scans</a>
+                <a href="#"><i class="ri-settings-4-line"></i> Settings</a>
+            </nav>
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=Dr.+Smith&background=0D8ABC&color=fff" alt="User" class="avatar">
+                <div class="user-info">
+                    <p class="name">Dr. Smith</p>
+                    <p class="role">Oncologist</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <div>
+                    <h1>AI Oral Cancer Screening</h1>
+                    <p class="subtitle">Upload intraoral images for instant AI analysis.</p>
+                </div>
+                <div class="header-actions">
+                    <span class="badge live-badge"><i class="ri-record-circle-line"></i> Demo Mode Live</span>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Upload Section -->
+                <div class="card upload-card glassmorphism">
+                    <h3><i class="ri-upload-cloud-2-line"></i> New Scan</h3>
+                    <div class="upload-zone" id="uploadZone">
+                        <i class="ri-image-add-line upload-icon"></i>
+                        <p>Drag & drop patient image here</p>
+                        <span>or</span>
+                        <button class="btn btn-primary" id="browseBtn">Browse Files</button>
+                        <input type="file" id="fileInput" accept="image/*" hidden>
+                    </div>
+                    
+                    <div class="preview-area hidden" id="previewArea">
+                        <img id="imagePreview" src="" alt="Preview">
+                        <div class="actions">
+                            <button class="btn btn-outline" id="resetBtn">Change Image</button>
+                            <button class="btn btn-primary" id="analyzeBtn">Analyze Image</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Results Section -->
+                <div class="card results-card glassmorphism hidden" id="resultsCard">
+                    <h3><i class="ri-file-chart-line"></i> AI Analysis Result</h3>
+                    
+                    <div class="loader hidden" id="loader">
+                        <div class="spinner"></div>
+                        <p>Analyzing tissue patterns using Deep Learning...</p>
+                    </div>
+
+                    <div class="result-content hidden" id="resultContent">
+                        <div class="risk-badge high-risk">
+                            <i class="ri-alert-fill"></i> High Risk Detected
+                        </div>
+                        
+                        <div class="finding-details">
+                            <h4>Primary Finding: <span class="highlight">Leukoplakia / Suspicious Lesion</span></h4>
+                            
+                            <div class="confidence-bar">
+                                <div class="bar-header">
+                                    <span>AI Confidence Score</span>
+                                    <span>94%</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-fill" style="width: 94%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="recommendations">
+                            <h4>Clinical Recommendations:</h4>
+                            <ul>
+                                <li>Immediate biopsy recommended.</li>
+                                <li>Refer to oral maxillofacial surgeon.</li>
+                                <li>Advise patient to cease tobacco use.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
