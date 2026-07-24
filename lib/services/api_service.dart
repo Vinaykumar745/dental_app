@@ -5,7 +5,7 @@ import '../models/patient_model.dart';
 import '../models/result_model.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://f137fa84a7372095-180-235-121-242.serveousercontent.com';
+  static const String baseUrl = 'https://dentalscan-backend.onrender.com';
   static String? _token;
 
   static Future<String?> getToken() async {
