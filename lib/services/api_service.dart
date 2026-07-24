@@ -5,7 +5,7 @@ import '../models/patient_model.dart';
 import '../models/result_model.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://127.0.0.1:8000';
+  static const String baseUrl = 'https://dentalscan-api-12345.loca.lt';
   static String? _token;
 
   static Future<String?> getToken() async {
@@ -34,6 +34,7 @@ class ApiService {
     final token = await getToken();
     return {
       'Content-Type': 'application/json',
+      'Bypass-Tunnel-Reminder': 'true',
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }
@@ -46,7 +47,7 @@ class ApiService {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/signup'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true'},
         body: jsonEncode({'name': name, 'email': email, 'password': password}),
       );
       final data = jsonDecode(response.body);
@@ -70,7 +71,7 @@ class ApiService {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/login'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true'},
         body: jsonEncode({'email': email, 'password': password}),
       );
       final data = jsonDecode(response.body);
@@ -91,7 +92,7 @@ class ApiService {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/forgot-password'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true'},
         body: jsonEncode({'email': email}),
       );
       final data = jsonDecode(response.body);
@@ -106,7 +107,7 @@ class ApiService {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/reset-password'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true'},
         body: jsonEncode({'token': token, 'newPassword': newPassword}),
       );
       final data = jsonDecode(response.body);
@@ -125,7 +126,7 @@ class ApiService {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/google-login'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true'},
         body: jsonEncode({'name': name, 'email': email, 'photoUrl': photoUrl ?? ''}),
       );
       final data = jsonDecode(response.body);
