@@ -48,7 +48,7 @@ jobs:
         run: |
           mkdir -p build_serve/dental_app
           cp -r build/web/* build_serve/dental_app/
-          npx serve build_serve -l 5173 &
+          npx -y serve build_serve -l 5173 &
           sleep 4
           curl -s http://127.0.0.1:5173/dental_app/ > /dev/null && echo "Server is up!"
 
