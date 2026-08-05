@@ -38,7 +38,7 @@ class HelpCenterScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             'Frequently Asked Questions',
             style: TextStyle(
@@ -47,7 +47,7 @@ class HelpCenterScreen extends StatelessWidget {
               color: textColor,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           ...faqs.map((faq) => Card(
                 color: cardColor,
                 margin: const EdgeInsets.only(bottom: 12),
@@ -73,7 +73,7 @@ class HelpCenterScreen extends StatelessWidget {
                   ],
                 ),
               )),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Text(
             'Contact Support',
             style: TextStyle(
@@ -82,17 +82,17 @@ class HelpCenterScreen extends StatelessWidget {
               color: textColor,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.primary.withOpacity(0.1),
+              color: AppTheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
               children: [
                 const Icon(Icons.email_outlined, color: AppTheme.primary, size: 30),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -105,7 +105,7 @@ class HelpCenterScreen extends StatelessWidget {
                           color: textColor,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         'support@dentalscan.ai',
                         style: TextStyle(color: textGreyColor),

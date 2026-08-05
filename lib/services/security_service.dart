@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SecurityService {
@@ -16,7 +16,7 @@ class SecurityService {
       final encrypted = _encrypter.encrypt(plainText, iv: _iv);
       return encrypted.base64;
     } catch (e) {
-      print('Encryption error: $e');
+      debugPrint('Encryption error: $e');
       return plainText; // Fallback
     }
   }
@@ -28,7 +28,7 @@ class SecurityService {
       final decrypted = _encrypter.decrypt(encrypted, iv: _iv);
       return decrypted;
     } catch (e) {
-      print('Decryption error: $e');
+      debugPrint('Decryption error: $e');
       return encryptedText; // Fallback
     }
   }

@@ -20,7 +20,7 @@ class AboutAppScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
               width: 120,
               height: 120,
@@ -29,7 +29,7 @@ class AboutAppScreen extends StatelessWidget {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   )
@@ -39,7 +39,7 @@ class AboutAppScreen extends StatelessWidget {
                 child: Image.asset('assets/images/dental_logo.png', fit: BoxFit.cover),
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Text(
               'DentalScan AI',
               style: TextStyle(
@@ -48,14 +48,14 @@ class AboutAppScreen extends StatelessWidget {
                 color: textColor,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.1),
+                color: AppTheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
+              child: const Text(
                 'Version 1.0.0',
                 style: TextStyle(
                   fontSize: 14,
@@ -64,33 +64,33 @@ class AboutAppScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             _buildSection(
               title: 'Our Mission',
               content: 'DentalScan AI aims to revolutionize oral healthcare by providing an advanced AI-powered tool for early detection and assessment of oral cancer risks. We empower dental professionals with state-of-the-art technology to make informed clinical decisions.',
               textColor: textColor,
               textGreyColor: textGreyColor,
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             _buildSection(
               title: 'How It Works',
               content: 'Using highly-trained convolutional neural networks, our system analyzes oral lesion images captured via smartphone cameras. It provides a real-time risk assessment, probability scoring, and clinical recommendations based on global medical datasets.',
               textColor: textColor,
               textGreyColor: textGreyColor,
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             _buildSection(
               title: 'Medical Disclaimer',
               content: 'DentalScan AI is designed to assist dental professionals and should not be used as a standalone diagnostic tool. Always consult a certified medical practitioner or oncologist for a definitive diagnosis.',
               textColor: textColor,
               textGreyColor: textGreyColor,
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Text(
               '© 2026 DentalScan AI. All rights reserved.',
               style: TextStyle(color: textGreyColor, fontSize: 12),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -114,7 +114,7 @@ class AboutAppScreen extends StatelessWidget {
             color: textColor,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           content,
           style: TextStyle(

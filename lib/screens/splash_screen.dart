@@ -3,7 +3,6 @@ import '../services/localization_service.dart';
 import 'package:http/http.dart' as http;
 import 'auth_screen.dart';
 import 'dashboard_screen.dart';
-import '../theme/app_theme.dart';
 import '../services/auth_state.dart';
 import '../services/api_service.dart';
 
@@ -141,7 +140,7 @@ class _SplashScreenState extends State<SplashScreen>
                     height: 200,
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.05)))),
+                        color: Colors.white.withValues(alpha: 0.05)))),
             Positioned(
                 bottom: -80,
                 left: -40,
@@ -150,7 +149,7 @@ class _SplashScreenState extends State<SplashScreen>
                     height: 250,
                     decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.05)))),
+                        color: Colors.white.withValues(alpha: 0.05)))),
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -173,7 +172,7 @@ class _SplashScreenState extends State<SplashScreen>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black.withValues(alpha: 0.2),
                               blurRadius: 30,
                               spreadRadius: 5)
                         ],
@@ -184,7 +183,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                   ),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   AnimatedBuilder(
                     animation: _textController,
                     builder: (context, child) => FadeTransition(
@@ -195,20 +194,20 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Column(
                       children: [
                         Text(AppLocalizations.tr('dentalscan_ai'),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
                                 letterSpacing: 1.0)),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 6),
                           decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
+                              color: Colors.white.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(20)),
                           child: Text(AppLocalizations.tr('aipowered_oral_cancer_detection'),
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.white,
                                   letterSpacing: 0.5)),
@@ -216,7 +215,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ],
                     ),
                   ),
-                  SizedBox(height: 80),
+                  const SizedBox(height: 80),
                   AnimatedBuilder(
                     animation: _textController,
                     builder: (context, child) =>
@@ -228,16 +227,16 @@ class _SplashScreenState extends State<SplashScreen>
                           height: 40,
                           child: CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white.withOpacity(0.8)),
+                                  Colors.white.withValues(alpha: 0.8)),
                               strokeWidth: 2.5),
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         AnimatedBuilder(
                           animation: _textController,
                           builder: (_, __) => Text(
                             _statusText,
                             style: TextStyle(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                                 fontSize: 13),
                           ),
                         ),
@@ -258,7 +257,7 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Text(AppLocalizations.tr('version_100__for_medical_use'),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.5), fontSize: 11)),
+                        color: Colors.white.withValues(alpha: 0.5), fontSize: 11)),
               ),
             ),
           ],

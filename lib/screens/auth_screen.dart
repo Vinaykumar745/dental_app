@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../services/localization_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../theme/app_theme.dart';
@@ -42,7 +43,7 @@ class _AuthScreenState extends State<AuthScreen>
         child: SafeArea(
           child: Column(
             children: [
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Column(children: [
                 Container(
                   width: 80, height: 80,
@@ -51,16 +52,16 @@ class _AuthScreenState extends State<AuthScreen>
                   child: const Icon(Icons.local_hospital,
                       color: AppTheme.primary, size: 44),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(AppLocalizations.tr('dentalscan_ai'),
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800,
+                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800,
                         color: Colors.white, letterSpacing: 1.0)),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(AppLocalizations.tr('aipowered_oral_cancer_detection'),
                     style: TextStyle(fontSize: 13,
-                        color: Colors.white.withOpacity(0.8))),
+                        color: Colors.white.withValues(alpha: 0.8))),
               ]),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Expanded(
                 child: Container(
                   decoration: const BoxDecoration(
@@ -69,7 +70,7 @@ class _AuthScreenState extends State<AuthScreen>
                         topLeft: Radius.circular(32),
                         topRight: Radius.circular(32))),
                   child: Column(children: [
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     Container(
                       margin: const EdgeInsets.symmetric(horizontal: 24),
                       decoration: BoxDecoration(
@@ -85,14 +86,14 @@ class _AuthScreenState extends State<AuthScreen>
                         unselectedLabelColor: AppTheme.textGrey,
                         labelStyle: const TextStyle(
                             fontWeight: FontWeight.w600, fontSize: 15),
-                        tabs: [Tab(text: 'Login'), Tab(text: 'Sign Up')],
+                        tabs: const [Tab(text: 'Login'), Tab(text: 'Sign Up')],
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Expanded(
                       child: TabBarView(
                         controller: _tabController,
-                        children: [LoginForm(), SignUpForm()],
+                        children: const [LoginForm(), SignUpForm()],
                       ),
                     ),
                   ]),
@@ -118,11 +119,20 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
   GoogleSignIn? _googleSignIn;
 
   GoogleSignIn _getGoogleSignIn() {
-    _googleSignIn ??= GoogleSignIn(
-      scopes: ['email', 'profile'],
-      clientId: '531685027257-d8jggjvbtgtrkl8g0peq4nm6fer3323j.apps.googleusercontent.com',
-      serverClientId: '531685027257-d8jggjvbtgtrkl8g0peq4nm6fer3323j.apps.googleusercontent.com',
-    );
+    if (_googleSignIn == null) {
+      if (kIsWeb) {
+        _googleSignIn = GoogleSignIn(
+          scopes: ['email', 'profile'],
+          clientId: '1003206495688-5iit97k0lmdcs0jnp56aqg5guoiuij74.apps.googleusercontent.com',
+        );
+      } else {
+        _googleSignIn = GoogleSignIn(
+          scopes: ['email', 'profile'],
+          clientId: '1003206495688-5iit97k0lmdcs0jnp56aqg5guoiuij74.apps.googleusercontent.com',
+          serverClientId: '1003206495688-5iit97k0lmdcs0jnp56aqg5guoiuij74.apps.googleusercontent.com',
+        );
+      }
+    }
     return _googleSignIn!;
   }
 
@@ -180,11 +190,11 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade300),
           boxShadow: [BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8, offset: const Offset(0, 2))],
         ),
         child: _isLoading
-            ? Center(child: SizedBox(width: 20, height: 20,
+            ? const Center(child: SizedBox(width: 20, height: 20,
                 child: CircularProgressIndicator(strokeWidth: 2,
                     color: AppTheme.primary)))
             : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -194,9 +204,9 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                   errorBuilder: (_, __, ___) =>
                       const Icon(Icons.g_mobiledata, color: Colors.red, size: 24),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Text(AppLocalizations.tr('continue_with_google'),
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600,
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600,
                         color: AppTheme.textDark)),
               ]),
       ),
@@ -288,6 +298,7 @@ class _LoginFormState extends State<LoginForm> {
                           final result = await ApiService.forgotPassword(email);
                           setState(() => isLoading = false);
                           if (result.success) {
+                            if (!ctx.mounted) return;
                             Navigator.pop(ctx);
                             _showResetPasswordDialog(result.data['reset_token']);
                           } else {
@@ -357,6 +368,7 @@ class _LoginFormState extends State<LoginForm> {
                           final result = await ApiService.resetPassword(token, pw);
                           setState(() => isLoading = false);
                           if (result.success) {
+                            if (!ctx.mounted || !mounted) return;
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(this.context).showSnackBar(
                               const SnackBar(content: Text('Password reset successfully! You can now login.'), backgroundColor: AppTheme.success),
@@ -394,28 +406,28 @@ class _LoginFormState extends State<LoginForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(AppLocalizations.tr('welcome_back'),
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700,
                     color: AppTheme.textDark)),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(AppLocalizations.tr('sign_in_to_your_account'),
-                style: TextStyle(fontSize: 14, color: AppTheme.textGrey)),
-            SizedBox(height: 24),
+                style: const TextStyle(fontSize: 14, color: AppTheme.textGrey)),
+            const SizedBox(height: 24),
 
             // Google Sign In
             const GoogleSignInButton(),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Divider
             Row(children: [
               Expanded(child: Divider(color: Colors.grey.shade300)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(AppLocalizations.tr('or'), style: TextStyle(color: AppTheme.textGrey,
+                child: Text(AppLocalizations.tr('or'), style: const TextStyle(color: AppTheme.textGrey,
                     fontSize: 12, fontWeight: FontWeight.w600)),
               ),
               Expanded(child: Divider(color: Colors.grey.shade300)),
             ]),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             TextFormField(
               controller: _emailController,
@@ -430,7 +442,7 @@ class _LoginFormState extends State<LoginForm> {
                 return null;
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _passwordController,
               obscureText: _obscurePassword,
@@ -450,16 +462,16 @@ class _LoginFormState extends State<LoginForm> {
               },
             ),
             if (_errorMessage != null) ...[
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                    color: AppTheme.danger.withOpacity(0.1),
+                    color: AppTheme.danger.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.danger.withOpacity(0.3))),
+                    border: Border.all(color: AppTheme.danger.withValues(alpha: 0.3))),
                 child: Row(children: [
                   const Icon(Icons.error_outline, color: AppTheme.danger, size: 18),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(child: Text(_errorMessage!,
                       style: const TextStyle(color: AppTheme.danger, fontSize: 13))),
                 ]),
@@ -470,13 +482,13 @@ class _LoginFormState extends State<LoginForm> {
               child: TextButton(
                 onPressed: _showForgotPasswordDialog,
                 child: Text(AppLocalizations.tr('forgot_password'),
-                    style: TextStyle(color: AppTheme.primary)),
+                    style: const TextStyle(color: AppTheme.primary)),
               ),
             ),
             ElevatedButton(
               onPressed: _isLoading ? null : _login,
               child: _isLoading
-                  ? SizedBox(height: 20, width: 20,
+                  ? const SizedBox(height: 20, width: 20,
                       child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                   : Text(AppLocalizations.tr('login')),
             ),
@@ -549,26 +561,26 @@ class _SignUpFormState extends State<SignUpForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(AppLocalizations.tr('create_account_1'),
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700,
                     color: AppTheme.textDark)),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(AppLocalizations.tr('register_to_get_started'),
-                style: TextStyle(fontSize: 14, color: AppTheme.textGrey)),
-            SizedBox(height: 20),
+                style: const TextStyle(fontSize: 14, color: AppTheme.textGrey)),
+            const SizedBox(height: 20),
 
             // Google Sign Up
             const GoogleSignInButton(),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(children: [
               Expanded(child: Divider(color: Colors.grey.shade300)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(AppLocalizations.tr('or'), style: TextStyle(color: AppTheme.textGrey,
+                child: Text(AppLocalizations.tr('or'), style: const TextStyle(color: AppTheme.textGrey,
                     fontSize: 12, fontWeight: FontWeight.w600)),
               ),
               Expanded(child: Divider(color: Colors.grey.shade300)),
             ]),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             TextFormField(
               controller: _nameController,
@@ -579,7 +591,7 @@ class _SignUpFormState extends State<SignUpForm> {
               ),
               validator: (v) => v == null || v.isEmpty ? 'Please enter your name' : null,
             ),
-            SizedBox(height: 14),
+            const SizedBox(height: 14),
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
@@ -593,7 +605,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 return null;
               },
             ),
-            SizedBox(height: 14),
+            const SizedBox(height: 14),
             TextFormField(
               controller: _passwordController,
               obscureText: _obscurePassword,
@@ -612,7 +624,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 return null;
               },
             ),
-            SizedBox(height: 14),
+            const SizedBox(height: 14),
             TextFormField(
               controller: _confirmController,
               obscureText: _obscureConfirm,
@@ -632,34 +644,34 @@ class _SignUpFormState extends State<SignUpForm> {
               },
             ),
             if (_errorMessage != null) ...[
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                    color: AppTheme.danger.withOpacity(0.1),
+                    color: AppTheme.danger.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.danger.withOpacity(0.3))),
+                    border: Border.all(color: AppTheme.danger.withValues(alpha: 0.3))),
                 child: Row(children: [
                   const Icon(Icons.error_outline, color: AppTheme.danger, size: 18),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(child: Text(_errorMessage!,
                       style: const TextStyle(color: AppTheme.danger, fontSize: 13))),
                 ]),
               ),
             ],
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _isLoading ? null : _signUp,
               child: _isLoading
-                  ? SizedBox(height: 20, width: 20,
+                  ? const SizedBox(height: 20, width: 20,
                       child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                   : Text(AppLocalizations.tr('create_account')),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Center(
               child: Text(AppLocalizations.tr('by_signing_up_you_agree_to_our_terms__privacy_policy'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 11, color: AppTheme.textGrey)),
+                  style: const TextStyle(fontSize: 11, color: AppTheme.textGrey)),
             ),
           ],
         ),

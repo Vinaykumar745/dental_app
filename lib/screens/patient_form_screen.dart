@@ -144,39 +144,39 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(Icons.person_add, color: Colors.white, size: 28),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(AppLocalizations.tr('new_patient'),
-                            style: TextStyle(color: Colors.white, fontSize: 18,
+                            style: const TextStyle(color: Colors.white, fontSize: 18,
                               fontWeight: FontWeight.w700)),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(AppLocalizations.tr('fill_in_the_patient_details_below'),
-                            style: TextStyle(color: Colors.white70, fontSize: 13)),
+                            style: const TextStyle(color: Colors.white70, fontSize: 13)),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 28),
+              const SizedBox(height: 28),
               Row(children: [
                 Container(width: 4, height: 20,
                   decoration: BoxDecoration(color: AppTheme.primary,
                     borderRadius: BorderRadius.circular(2))),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(AppLocalizations.tr('personal_information'),
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700,
                     color: AppTheme.textDark)),
               ]),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _card(TextFormField(
                 controller: _nameController,
                 textCapitalization: TextCapitalization.words,
@@ -191,7 +191,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                   return null;
                 },
               )),
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
               _card(TextFormField(
                 controller: _ageController,
                 keyboardType: TextInputType.number,
@@ -208,7 +208,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                   return null;
                 },
               )),
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
               _card(TextFormField(
                 controller: _mobileController,
                 keyboardType: TextInputType.phone,
@@ -225,7 +225,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                   return null;
                 },
               )),
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
               _card(InkWell(
                 onTap: _pickDate,
                 borderRadius: BorderRadius.circular(12),
@@ -234,14 +234,14 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                   child: Row(
                     children: [
                       const Icon(Icons.calendar_today, color: AppTheme.primary, size: 22),
-                      SizedBox(width: 14),
+                      const SizedBox(width: 14),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(AppLocalizations.tr('appointment_date'),
-                              style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
-                            SizedBox(height: 2),
+                              style: const TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                            const SizedBox(height: 2),
                             Text(
                               _selectedDate == null
                                 ? 'Select date'
@@ -260,15 +260,15 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                   ),
                 ),
               )),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppTheme.accent.withOpacity(0.08),
+                  color: AppTheme.accent.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.accent.withOpacity(0.2)),
+                  border: Border.all(color: AppTheme.accent.withValues(alpha: 0.2)),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(Icons.info_outline, color: AppTheme.accent, size: 20),
                     SizedBox(width: 10),
@@ -281,7 +281,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isLoading ? null : _submitForm,
                 style: ElevatedButton.styleFrom(
@@ -289,18 +289,18 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
                 child: _isLoading
-                  ? SizedBox(height: 22, width: 22,
+                  ? const SizedBox(height: 22, width: 22,
                       child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(AppLocalizations.tr('save__continue'), style: TextStyle(fontSize: 16)),
-                        SizedBox(width: 8),
-                        Icon(Icons.arrow_forward, size: 20),
+                        Text(AppLocalizations.tr('save__continue'), style: const TextStyle(fontSize: 16)),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.arrow_forward, size: 20),
                       ],
                     ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -313,7 +313,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05),
           blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: child,

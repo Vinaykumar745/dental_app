@@ -68,14 +68,14 @@ class _TutorialScreenState extends State<TutorialScreen> {
                     icon: const Icon(Icons.close, color: Colors.white, size: 32),
                     onPressed: _proceedToCamera,
                   ),
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'How to Capture Images',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  SizedBox(width: 48), // Balance for back button
+                  const SizedBox(width: 48), // Balance for back button
                 ],
               ),
             ),
@@ -102,17 +102,17 @@ class _TutorialScreenState extends State<TutorialScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
+                  const Text(
                     'Follow the Video Guide',
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.textDark),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 12),
-                  Text(
+                  const SizedBox(height: 12),
+                  const Text(
                     '1. Find a brightly lit room.\n2. Open your mouth wide.\n3. Position the camera exactly as shown to ensure an accurate AI analysis.',
                     style: TextStyle(fontSize: 16, color: AppTheme.textGrey, height: 1.5),
                   ),
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
                   Row(
                     children: [
                       Checkbox(
@@ -125,11 +125,11 @@ class _TutorialScreenState extends State<TutorialScreen> {
                         },
                       ),
                       Expanded(
-                        child: Text(AppLocalizations.tr('dont_show_this_tutorial_again'), style: TextStyle(fontSize: 14, color: AppTheme.textDark)),
+                        child: Text(AppLocalizations.tr('dont_show_this_tutorial_again'), style: const TextStyle(fontSize: 14, color: AppTheme.textDark)),
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _proceedToCamera,
                     style: ElevatedButton.styleFrom(
@@ -137,7 +137,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
-                    child: Text(AppLocalizations.tr('i_understand_open_camera'), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    child: Text(AppLocalizations.tr('i_understand_open_camera'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),

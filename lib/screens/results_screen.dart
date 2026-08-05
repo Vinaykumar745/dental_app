@@ -7,11 +7,8 @@ import 'package:fl_chart/fl_chart.dart';
 import '../models/patient_model.dart';
 import '../models/result_model.dart';
 import '../services/api_service.dart';
-import '../services/api_service.dart';
 import '../services/report_service.dart';
-import '../services/local_db_service.dart';
 import '../theme/app_theme.dart';
-import 'dashboard_screen.dart';
 import '../widgets/feedback_dialog.dart';
 
 class ResultsScreen extends StatefulWidget {
@@ -200,7 +197,7 @@ class _ResultsScreenState extends State<ResultsScreen>
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                  color: AppTheme.primary.withOpacity(0.1),
+                  color: AppTheme.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle),
               child: Stack(alignment: Alignment.center, children: [
                 AnimatedBuilder(
@@ -215,16 +212,16 @@ class _ResultsScreenState extends State<ResultsScreen>
                 const Icon(Icons.psychology, color: AppTheme.primary, size: 50),
               ]),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             Text(AppLocalizations.tr('ai_is_analyzing_your_images'),
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: AppTheme.textDark)),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(AppLocalizations.tr('please_wait'),
-                style: TextStyle(fontSize: 14, color: AppTheme.textGrey)),
-            SizedBox(height: 32),
+                style: const TextStyle(fontSize: 14, color: AppTheme.textGrey)),
+            const SizedBox(height: 32),
             ...List.generate(_steps.length, (i) {
               final isDone = i < _analyzingStep;
               final isCurrent = i == _analyzingStep;
@@ -234,16 +231,16 @@ class _ResultsScreenState extends State<ResultsScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 decoration: BoxDecoration(
                   color: isDone
-                      ? AppTheme.success.withOpacity(0.1)
+                      ? AppTheme.success.withValues(alpha: 0.1)
                       : isCurrent
-                          ? AppTheme.primary.withOpacity(0.08)
+                          ? AppTheme.primary.withValues(alpha: 0.08)
                           : Colors.white,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                       color: isDone
-                          ? AppTheme.success.withOpacity(0.3)
+                          ? AppTheme.success.withValues(alpha: 0.3)
                           : isCurrent
-                              ? AppTheme.primary.withOpacity(0.3)
+                              ? AppTheme.primary.withValues(alpha: 0.3)
                               : Colors.grey.shade200),
                 ),
                 child: Row(children: [
@@ -254,7 +251,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                               ? AppTheme.primary
                               : Colors.grey.shade400,
                       size: 18),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(_steps[i],
                         style: TextStyle(
@@ -269,7 +266,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                                 : FontWeight.normal)),
                   ),
                   if (isCurrent)
-                    SizedBox(
+                    const SizedBox(
                         width: 14,
                         height: 14,
                         child: CircularProgressIndicator(
@@ -311,17 +308,17 @@ class _ResultsScreenState extends State<ResultsScreen>
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                    color: riskColor.withOpacity(0.1),
+                    color: riskColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: riskColor.withOpacity(0.4), width: 1.5)),
+                    border: Border.all(color: riskColor.withValues(alpha: 0.4), width: 1.5)),
                 child: Row(children: [
                   Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                          color: riskColor.withOpacity(0.15),
+                          color: riskColor.withValues(alpha: 0.15),
                           shape: BoxShape.circle),
                       child: Icon(riskIcon, color: riskColor, size: 28)),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,36 +329,36 @@ class _ResultsScreenState extends State<ResultsScreen>
                                 fontWeight: FontWeight.w800,
                                 color: riskColor,
                                 letterSpacing: 1)),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text('Cancer Probability: ${result.cancerProbability.toInt()}%',
                             style: TextStyle(
                                 fontSize: 14,
-                                color: riskColor.withOpacity(0.8),
+                                color: riskColor.withValues(alpha: 0.8),
                                 fontWeight: FontWeight.w500)),
                         Text('Patient: ${widget.patient.name}',
                             style: const TextStyle(fontSize: 13, color: AppTheme.textGrey)),
                       ])),
                 ]),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               // Save status
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                 decoration: BoxDecoration(
                     color: _savedToDb
-                        ? AppTheme.success.withOpacity(0.1)
-                        : AppTheme.warning.withOpacity(0.1),
+                        ? AppTheme.success.withValues(alpha: 0.1)
+                        : AppTheme.warning.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                         color: _savedToDb
-                            ? AppTheme.success.withOpacity(0.2)
-                            : AppTheme.warning.withOpacity(0.2))),
+                            ? AppTheme.success.withValues(alpha: 0.2)
+                            : AppTheme.warning.withValues(alpha: 0.2))),
                 child: Row(children: [
                   Icon(_savedToDb ? Icons.cloud_done : Icons.cloud_queue,
                       color: _savedToDb ? AppTheme.success : AppTheme.warning,
                       size: 16),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
                       _savedToDb
                           ? 'Results saved to database'
@@ -372,7 +369,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                           fontWeight: FontWeight.w500)),
                 ]),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Pie chart
               Card(
@@ -382,15 +379,15 @@ class _ResultsScreenState extends State<ResultsScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(children: [
-                        Icon(Icons.pie_chart, color: AppTheme.primary, size: 20),
-                        SizedBox(width: 8),
+                        const Icon(Icons.pie_chart, color: AppTheme.primary, size: 20),
+                        const SizedBox(width: 8),
                         Text(AppLocalizations.tr('probability_analysis'),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: AppTheme.textDark)),
                       ]),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(children: [
                         SizedBox(
                           height: 160,
@@ -419,19 +416,19 @@ class _ResultsScreenState extends State<ResultsScreen>
                                       fontWeight: FontWeight.w800,
                                       color: riskColor)),
                               Text(AppLocalizations.tr('risk'),
-                                  style: TextStyle(fontSize: 11, color: AppTheme.textGrey)),
+                                  style: const TextStyle(fontSize: 11, color: AppTheme.textGrey)),
                             ]),
                           ]),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _dot('Cancer Risk', result.cancerProbability, riskColor),
-                              SizedBox(height: 12),
+                              const SizedBox(height: 12),
                               _dot('Normal', 100 - result.cancerProbability, Colors.grey.shade400),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
@@ -441,8 +438,8 @@ class _ResultsScreenState extends State<ResultsScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(AppLocalizations.tr('model_confidence'),
-                                        style: TextStyle(fontSize: 11, color: AppTheme.textGrey)),
-                                    SizedBox(height: 4),
+                                        style: const TextStyle(fontSize: 11, color: AppTheme.textGrey)),
+                                    const SizedBox(height: 4),
                                     Text('${result.modelConfidenceScore.toInt()}%',
                                         style: const TextStyle(
                                             fontSize: 18,
@@ -459,7 +456,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Lesion + Disease card
               Card(
@@ -469,30 +466,30 @@ class _ResultsScreenState extends State<ResultsScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(children: [
-                        Icon(Icons.biotech, color: AppTheme.primary, size: 20),
-                        SizedBox(width: 8),
+                        const Icon(Icons.biotech, color: AppTheme.primary, size: 20),
+                        const SizedBox(width: 8),
                         Text(AppLocalizations.tr('lesion__disease_detection'),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: AppTheme.textDark)),
                       ]),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                            color: AppTheme.primary.withOpacity(0.05),
+                            color: AppTheme.primary.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: AppTheme.primary.withOpacity(0.15))),
+                            border: Border.all(color: AppTheme.primary.withValues(alpha: 0.15))),
                         child: Row(children: [
                           const Icon(Icons.label_important, color: AppTheme.primary, size: 18),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(AppLocalizations.tr('detected_lesion_type'),
-                                    style: TextStyle(fontSize: 11, color: AppTheme.textGrey)),
+                                    style: const TextStyle(fontSize: 11, color: AppTheme.textGrey)),
                                 Text(result.lesionType,
                                     style: const TextStyle(
                                         fontSize: 15,
@@ -506,48 +503,48 @@ class _ResultsScreenState extends State<ResultsScreen>
                       if (result.diseaseName != null &&
                           result.diseaseName!.isNotEmpty &&
                           result.diseaseName != 'Normal') ...[
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         Container(
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                              color: AppTheme.warning.withOpacity(0.06),
+                              color: AppTheme.warning.withValues(alpha: 0.06),
                               borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: AppTheme.warning.withOpacity(0.2))),
+                              border: Border.all(color: AppTheme.warning.withValues(alpha: 0.2))),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(children: [
                                 const Icon(Icons.local_hospital, color: AppTheme.warning, size: 18),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Text(AppLocalizations.tr('matched_disease'),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
                                         color: AppTheme.textDark)),
                               ]),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(result.diseaseName!,
                                   style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w700,
                                       color: AppTheme.warning)),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Row(children: [
                                 Text(AppLocalizations.tr('match_probability'),
-                                    style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                                    style: const TextStyle(fontSize: 12, color: AppTheme.textGrey)),
                                 Text('${result.diseaseMatchProbability?.toInt() ?? 0}%',
                                     style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
                                         color: AppTheme.warning)),
                               ]),
-                              SizedBox(height: 6),
+                              const SizedBox(height: 6),
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(4),
                                 child: LinearProgressIndicator(
                                   value: (result.diseaseMatchProbability ?? 0) / 100,
                                   backgroundColor: Colors.grey.shade200,
-                                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.warning),
+                                  valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.warning),
                                   minHeight: 8,
                                 ),
                               ),
@@ -556,13 +553,13 @@ class _ResultsScreenState extends State<ResultsScreen>
                         ),
                       ],
                       if (result.lesionLocations.isNotEmpty) ...[
-                        SizedBox(height: 14),
+                        const SizedBox(height: 14),
                         Text(AppLocalizations.tr('affected_locations'),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: AppTheme.textDark)),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         ...result.lesionLocations.map((loc) => Padding(
                               padding: const EdgeInsets.only(bottom: 6),
                               child: Row(children: [
@@ -571,25 +568,25 @@ class _ResultsScreenState extends State<ResultsScreen>
                                     height: 6,
                                     decoration: const BoxDecoration(
                                         color: AppTheme.danger, shape: BoxShape.circle)),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Text(loc,
                                     style: const TextStyle(fontSize: 13, color: AppTheme.textGrey)),
                               ]),
                             )),
                       ] else ...[
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         Row(children: [
-                          Icon(Icons.check_circle, color: AppTheme.success, size: 18),
-                          SizedBox(width: 8),
+                          const Icon(Icons.check_circle, color: AppTheme.success, size: 18),
+                          const SizedBox(width: 8),
                           Text(AppLocalizations.tr('no_significant_lesion_locations_detected'),
-                              style: TextStyle(fontSize: 13, color: AppTheme.success)),
+                              style: const TextStyle(fontSize: 13, color: AppTheme.success)),
                         ]),
                       ],
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Per image analysis
               Card(
@@ -599,15 +596,15 @@ class _ResultsScreenState extends State<ResultsScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(children: [
-                        Icon(Icons.image_search, color: AppTheme.primary, size: 20),
-                        SizedBox(width: 8),
+                        const Icon(Icons.image_search, color: AppTheme.primary, size: 20),
+                        const SizedBox(width: 8),
                         Text(AppLocalizations.tr('perimage_analysis'),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                                 color: AppTheme.textDark)),
                       ]),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       ...List.generate(result.imageAnalysis.length, (i) {
                         final a = result.imageAnalysis[i];
                         final isNormal =
@@ -617,13 +614,13 @@ class _ResultsScreenState extends State<ResultsScreen>
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                               color: isNormal
-                                  ? AppTheme.success.withOpacity(0.05)
-                                  : AppTheme.warning.withOpacity(0.05),
+                                  ? AppTheme.success.withValues(alpha: 0.05)
+                                  : AppTheme.warning.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                   color: isNormal
-                                      ? AppTheme.success.withOpacity(0.2)
-                                      : AppTheme.warning.withOpacity(0.2))),
+                                      ? AppTheme.success.withValues(alpha: 0.2)
+                                      : AppTheme.warning.withValues(alpha: 0.2))),
                           child: Row(children: [
                             SizedBox(
                               width: 56,
@@ -646,14 +643,14 @@ class _ResultsScreenState extends State<ResultsScreen>
                                         decoration: BoxDecoration(
                                           border: Border.all(color: AppTheme.danger, width: 2),
                                           borderRadius: BorderRadius.circular(4),
-                                          color: AppTheme.danger.withOpacity(0.2),
+                                          color: AppTheme.danger.withValues(alpha: 0.2),
                                         ),
                                       ),
                                     ),
                                 ],
                               ),
                             ),
-                            SizedBox(width: 12),
+                            const SizedBox(width: 12),
                             Expanded(
                                 child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -673,7 +670,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                             Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                    color: AppTheme.primary.withOpacity(0.1),
+                                    color: AppTheme.primary.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8)),
                                 child: Text('${a.confidence}%',
                                     style: const TextStyle(
@@ -687,34 +684,34 @@ class _ResultsScreenState extends State<ResultsScreen>
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Recommendation
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                    color: AppTheme.primary.withOpacity(0.06),
+                    color: AppTheme.primary.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.primary.withOpacity(0.2))),
+                    border: Border.all(color: AppTheme.primary.withValues(alpha: 0.2))),
                 child: Row(children: [
                   const Icon(Icons.medical_services, color: AppTheme.primary, size: 22),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                         Text(AppLocalizations.tr('clinical_recommendation'),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                                 color: AppTheme.primary)),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(result.recommendation,
                             style: const TextStyle(fontSize: 13, color: AppTheme.textGrey)),
                       ])),
                 ]),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // View Dashboard button
               ElevatedButton.icon(
@@ -732,7 +729,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14))),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               // Rescan button
               OutlinedButton.icon(
@@ -744,7 +741,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14))),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               // Download Report button
               ElevatedButton.icon(
@@ -764,7 +761,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14))),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -778,7 +775,7 @@ class _ResultsScreenState extends State<ResultsScreen>
           width: 14,
           height: 14,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-      SizedBox(width: 8),
+      const SizedBox(width: 8),
       Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(label,

@@ -1,12 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
 import '../services/localization_service.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:open_file/open_file.dart';
 import '../models/patient_model.dart';
 import '../models/result_model.dart';
 
@@ -23,12 +20,12 @@ class ReportService {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(children: [
-              SizedBox(width: 20, height: 20,
+              const SizedBox(width: 20, height: 20,
                   child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Text(AppLocalizations.tr('generating_pdf_report')),
             ]),
-            duration: Duration(seconds: 3),
+            duration: const Duration(seconds: 3),
           ),
         );
       }

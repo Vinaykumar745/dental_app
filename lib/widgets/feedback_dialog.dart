@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../services/localization_service.dart';
 import '../services/local_db_service.dart';
 import '../theme/app_theme.dart';
 import '../screens/dashboard_screen.dart';
@@ -88,7 +87,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                 hintText: 'Any additional comments? (Optional)',
                 hintStyle: const TextStyle(color: AppTheme.textGrey),
                 filled: true,
-                fillColor: AppTheme.primary.withOpacity(0.05),
+                fillColor: AppTheme.primary.withValues(alpha: 0.05),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -118,7 +117,7 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       backgroundColor: AppTheme.primary,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      disabledBackgroundColor: AppTheme.primary.withOpacity(0.3),
+                      disabledBackgroundColor: AppTheme.primary.withValues(alpha: 0.3),
                     ),
                     child: const Text('Submit', style: TextStyle(fontWeight: FontWeight.w700)),
                   ),

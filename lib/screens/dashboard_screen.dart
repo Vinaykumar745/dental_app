@@ -17,7 +17,6 @@ import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../services/report_service.dart';
-import 'privacy_policy_screen.dart';
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -137,10 +136,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: AppTheme.primary),
-                  SizedBox(height: 16),
+                  const CircularProgressIndicator(color: AppTheme.primary),
+                  const SizedBox(height: 16),
                   Text(AppLocalizations.tr('loading_dashboard'),
-                      style: TextStyle(color: AppTheme.textGrey)),
+                      style: const TextStyle(color: AppTheme.textGrey)),
                 ],
               ),
             )
@@ -164,21 +163,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
         selectedIndex: _selectedIndex,
         onDestinationSelected: (i) => setState(() => _selectedIndex = i),
         backgroundColor: navColor,
-        indicatorColor: AppTheme.primary.withOpacity(0.12),
+        indicatorColor: AppTheme.primary.withValues(alpha: 0.12),
         destinations: [
           NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard, color: AppTheme.primary),
+            icon: const Icon(Icons.dashboard_outlined),
+            selectedIcon: const Icon(Icons.dashboard, color: AppTheme.primary),
             label: AppLocalizations.tr('dashboard'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.people_outlined),
-            selectedIcon: Icon(Icons.people, color: AppTheme.primary),
+            icon: const Icon(Icons.people_outlined),
+            selectedIcon: const Icon(Icons.people, color: AppTheme.primary),
             label: AppLocalizations.tr('patients'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outlined),
-            selectedIcon: Icon(Icons.person, color: AppTheme.primary),
+            icon: const Icon(Icons.person_outlined),
+            selectedIcon: const Icon(Icons.person, color: AppTheme.primary),
             label: AppLocalizations.tr('profile'),
           ),
         ],
@@ -195,7 +194,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               backgroundColor: AppTheme.primary,
               icon: const Icon(Icons.add, color: Colors.white),
               label: Text(AppLocalizations.tr('new_scan'),
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: Colors.white, fontWeight: FontWeight.w600)),
             )
           : null,
@@ -259,18 +258,18 @@ class _HomeTab extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.local_hospital,
                           color: Colors.white, size: 24),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(AppLocalizations.tr('welcome_back_1'),
-                            style: TextStyle(color: Colors.white70, fontSize: 13)),
+                            style: const TextStyle(color: Colors.white70, fontSize: 13)),
                         Text('Dr. ${userName ?? 'Doctor'}',
                             style: const TextStyle(
                                 color: Colors.white,
@@ -279,13 +278,13 @@ class _HomeTab extends StatelessWidget {
                       ],
                     ),
                   ]),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     DateFormat('EEEE, dd MMMM yyyy').format(DateTime.now()),
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.8), fontSize: 13),
+                        color: Colors.white.withValues(alpha: 0.8), fontSize: 13),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     '$totalPatients patient${totalPatients != 1 ? 's' : ''} • $totalScans scan${totalScans != 1 ? 's' : ''} recorded',
                     style: const TextStyle(
@@ -296,24 +295,24 @@ class _HomeTab extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Stats
             Row(children: [
               _StatCard(label: AppLocalizations.tr('high_risk'), value: highRisk.toString(),
                   color: AppTheme.danger, icon: Icons.warning_rounded),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               _StatCard(label: AppLocalizations.tr('moderate'), value: modRisk.toString(),
                   color: AppTheme.warning, icon: Icons.info_rounded),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               _StatCard(label: AppLocalizations.tr('low_risk'), value: lowRisk.toString(),
                   color: AppTheme.success, icon: Icons.check_circle_rounded),
             ]),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Quick actions
             _sectionTitle('Quick Actions', textDarkColor),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Row(children: [
               Expanded(
                 child: _QuickAction(
@@ -329,7 +328,7 @@ class _HomeTab extends StatelessWidget {
                   },
                 ),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Expanded(
                 child: _QuickAction(
                   icon: Icons.history,
@@ -338,7 +337,7 @@ class _HomeTab extends StatelessWidget {
                   onTap: onRefresh,
                 ),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Expanded(
                 child: _QuickAction(
                   icon: Icons.model_training,
@@ -353,11 +352,11 @@ class _HomeTab extends StatelessWidget {
                 ),
               ),
             ]),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Recent scans
             _sectionTitle('Recent Scans', textDarkColor),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             if (history.isEmpty)
               Container(
                 padding: const EdgeInsets.all(32),
@@ -368,23 +367,23 @@ class _HomeTab extends StatelessWidget {
                 child: Column(
                   children: [
                     Icon(Icons.medical_services,
-                        size: 48, color: textGreyColor.withOpacity(0.5)),
-                    SizedBox(height: 12),
+                        size: 48, color: textGreyColor.withValues(alpha: 0.5)),
+                    const SizedBox(height: 12),
                     Text(AppLocalizations.tr('no_scans_yet'),
                         style: TextStyle(
                             fontSize: 16,
                             color: textGreyColor,
                             fontWeight: FontWeight.w600)),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(AppLocalizations.tr('tap_new_scan_to_get_started'),
                         style: TextStyle(
-                            fontSize: 13, color: textGreyColor.withOpacity(0.8))),
+                            fontSize: 13, color: textGreyColor.withValues(alpha: 0.8))),
                   ],
                 ),
               )
             else
-              ...history.map((item) => _ScanCard(item: item)).toList(),
-            SizedBox(height: 80),
+              ...history.map((item) => _ScanCard(item: item)),
+            const SizedBox(height: 80),
           ],
         ),
       ),
@@ -397,7 +396,7 @@ class _HomeTab extends StatelessWidget {
           width: 4, height: 18,
           decoration: BoxDecoration(
               color: AppTheme.primary, borderRadius: BorderRadius.circular(2))),
-      SizedBox(width: 8),
+      const SizedBox(width: 8),
       Text(title,
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w700, color: textDarkColor)),
@@ -446,7 +445,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                 '${widget.history.length} Patient${widget.history.length != 1 ? 's' : ''} Found',
                 style: const TextStyle(color: Colors.white70, fontSize: 12),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Container(
                 decoration: BoxDecoration(
                   color: isDark ? AppTheme.darkCardBg : Colors.white,
@@ -477,17 +476,17 @@ class _PatientsTabState extends State<_PatientsTab> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.people_outline,
-                          size: 64, color: textGreyColor.withOpacity(0.5)),
-                      SizedBox(height: 16),
+                          size: 64, color: textGreyColor.withValues(alpha: 0.5)),
+                      const SizedBox(height: 16),
                       Text(AppLocalizations.tr('no_patients_yet'),
                           style: TextStyle(
                               fontSize: 18,
                               color: textGreyColor,
                               fontWeight: FontWeight.w600)),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(AppLocalizations.tr('add_a_new_patient_scan_to_get_started'),
                           style: TextStyle(
-                              fontSize: 14, color: textGreyColor.withOpacity(0.8))),
+                              fontSize: 14, color: textGreyColor.withValues(alpha: 0.8))),
                     ],
                   ),
                 )
@@ -508,13 +507,13 @@ class _PatientsTabState extends State<_PatientsTab> {
                         margin: const EdgeInsets.only(bottom: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
-                          side: BorderSide(color: rc.withOpacity(0.2), width: 1),
+                          side: BorderSide(color: rc.withValues(alpha: 0.2), width: 1),
                         ),
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(14),
                           leading: CircleAvatar(
                             radius: 24,
-                            backgroundColor: rc.withOpacity(0.15),
+                            backgroundColor: rc.withValues(alpha: 0.15),
                             child: Text(
                               item.patient.name[0].toUpperCase(),
                               style: TextStyle(
@@ -531,28 +530,28 @@ class _PatientsTabState extends State<_PatientsTab> {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Row(children: [
                                 Icon(Icons.cake_outlined,
                                     size: 12, color: textGreyColor),
-                                SizedBox(width: 4),
+                                const SizedBox(width: 4),
                                 Text('Age: ${item.patient.age}',
                                     style: TextStyle(
                                         fontSize: 12, color: textGreyColor)),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Icon(Icons.phone_outlined,
                                     size: 12, color: textGreyColor),
-                                SizedBox(width: 4),
+                                const SizedBox(width: 4),
                                 Text(item.patient.mobile,
                                     style: TextStyle(
                                         fontSize: 12, color: textGreyColor)),
                               ]),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: rc.withOpacity(0.1),
+                                  color: rc.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(item.result.lesionType,
@@ -570,7 +569,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: rc.withOpacity(0.1),
+                                  color: rc.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
@@ -581,7 +580,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                                       fontSize: 14),
                                 ),
                               ),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Text(
                                 DateFormat('dd MMM').format(item.date),
                                 style: TextStyle(
@@ -635,19 +634,19 @@ class _PatientsTabState extends State<_PatientsTab> {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: rc.withOpacity(0.1),
+                  color: rc.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: rc.withOpacity(0.3)),
+                  border: Border.all(color: rc.withValues(alpha: 0.3)),
                 ),
                 child: Row(children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: rc.withOpacity(0.2),
+                    backgroundColor: rc.withValues(alpha: 0.2),
                     child: Text(item.patient.name[0].toUpperCase(),
                         style: TextStyle(
                             fontSize: 22, color: rc, fontWeight: FontWeight.w700)),
                   ),
-                  SizedBox(width: 14),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -660,7 +659,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                         Text('Age: ${item.patient.age} • ${item.patient.mobile}',
                             style: const TextStyle(
                                 color: AppTheme.textGrey, fontSize: 13)),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
@@ -688,7 +687,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.grey.shade100),
                         boxShadow: [BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
+                            color: Colors.black.withValues(alpha: 0.04),
                             blurRadius: 6, offset: const Offset(0, 2))],
                       ),
                       child: Column(children: [
@@ -703,27 +702,27 @@ class _PatientsTabState extends State<_PatientsTab> {
                           _row2('Locations', item.result.lesionLocations.join(', ')),
                       ]),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: rc.withOpacity(0.08),
+                        color: rc.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: rc.withOpacity(0.2)),
+                        border: Border.all(color: rc.withValues(alpha: 0.2)),
                       ),
                       child: Row(children: [
                         Icon(Icons.medical_services, color: rc, size: 20),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(AppLocalizations.tr('clinical_recommendation'),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.w700,
                                       fontSize: 13,
                                       color: AppTheme.textDark)),
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Text(item.result.recommendation,
                                   style: TextStyle(fontSize: 13, color: rc)),
                             ],
@@ -731,7 +730,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                         ),
                       ]),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     // Download Report button
                     ElevatedButton.icon(
                       onPressed: () async {
@@ -752,7 +751,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                             borderRadius: BorderRadius.circular(12)),
                       ),
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
@@ -837,6 +836,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                     setState(() {});
                   }
                 } catch (e) {
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(AppLocalizations.tr('camera_not_available_on_this_device'))),
                   );
@@ -856,6 +856,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                     setState(() {});
                   }
                 } catch (e) {
+                  if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(AppLocalizations.tr('gallery_not_available'))),
                   );
@@ -864,8 +865,8 @@ class _ProfileTabState extends State<_ProfileTab> {
             ),
             const Divider(),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(AppLocalizations.tr('predefined_avatars'), style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textGrey)),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(AppLocalizations.tr('predefined_avatars'), style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textGrey)),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -892,7 +893,7 @@ class _ProfileTabState extends State<_ProfileTab> {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.delete_outline, color: AppTheme.danger),
-              title: Text(AppLocalizations.tr('remove_avatar'), style: TextStyle(color: AppTheme.danger)),
+              title: Text(AppLocalizations.tr('remove_avatar'), style: const TextStyle(color: AppTheme.danger)),
               onTap: () async {
                 Navigator.pop(ctx);
                 await AuthState.updateAvatar('');
@@ -988,14 +989,14 @@ class _ProfileTabState extends State<_ProfileTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(AppLocalizations.tr('profile'), style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+                    Text(AppLocalizations.tr('profile'), style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
                     IconButton(
                       icon: const Icon(Icons.edit_outlined, color: Colors.white),
                       onPressed: () => _showEditProfile(context),
                     )
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 GestureDetector(
                   onTap: _showAvatarPicker,
                   child: Stack(
@@ -1007,7 +1008,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                           border: Border.all(color: Colors.white, width: 4),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: Colors.black.withValues(alpha: 0.3),
                               blurRadius: 15,
                               offset: const Offset(0, 8),
                             )
@@ -1040,26 +1041,26 @@ class _ProfileTabState extends State<_ProfileTab> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text('Dr. $name',
                     style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
                         color: Colors.white)),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(email,
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.8), fontSize: 14)),
-                SizedBox(height: 12),
+                        color: Colors.white.withValues(alpha: 0.8), fontSize: 14)),
+                const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white.withOpacity(0.3)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                   ),
                   child: Text(AppLocalizations.tr('senior_dental_surgeon'),
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: 13,
                           fontWeight: FontWeight.w600)),
@@ -1080,7 +1081,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 24,
                         offset: const Offset(0, 8))
                   ],
@@ -1109,7 +1110,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _sectionLabel(AppLocalizations.tr('preferences'), textGreyColor),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     _settingsCard(
                       cardColor: cardColor,
                       children: [
@@ -1149,10 +1150,10 @@ class _ProfileTabState extends State<_ProfileTab> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     
                     _sectionLabel(AppLocalizations.tr('account_security'), textGreyColor),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     _settingsCard(
                       cardColor: cardColor,
                       children: [
@@ -1177,10 +1178,10 @@ class _ProfileTabState extends State<_ProfileTab> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
                     _sectionLabel(AppLocalizations.tr('support'), textGreyColor),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     _settingsCard(
                       cardColor: cardColor,
                       children: [
@@ -1205,7 +1206,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
                     // Logout Button
                     GestureDetector(
@@ -1221,7 +1222,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Icon(Icons.logout_rounded, color: Colors.red),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             Text(AppLocalizations.tr('log_out'), style: const TextStyle(
                               color: Colors.red,
                               fontSize: 16,
@@ -1231,7 +1232,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 40),
+                    const SizedBox(height: 40),
                   ],
                 ),
               );
@@ -1247,10 +1248,10 @@ class _ProfileTabState extends State<_ProfileTab> {
       children: [
         Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+          decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
           child: Icon(icon, color: color, size: 24),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
         Text(label, style: TextStyle(fontSize: 12, color: textGreyColor)),
       ],
@@ -1274,7 +1275,7 @@ class _ProfileTabState extends State<_ProfileTab> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 5),
           )
@@ -1299,7 +1300,7 @@ class _ProfileTabState extends State<_ProfileTab> {
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.1),
+          color: iconColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: iconColor, size: 22),
@@ -1309,7 +1310,7 @@ class _ProfileTabState extends State<_ProfileTab> {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: AppTheme.primary,
+        activeThumbColor: AppTheme.primary,
       ),
     );
   }
@@ -1329,7 +1330,7 @@ class _ProfileTabState extends State<_ProfileTab> {
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.1),
+          color: iconColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: iconColor, size: 22),
@@ -1413,7 +1414,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                 ),
                 validator: (v) => v == null || v.isEmpty ? 'Required' : null,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: newController,
                 obscureText: true,
@@ -1425,7 +1426,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                 ),
                 validator: (v) => (v == null || v.length < 6) ? 'Min 6 chars' : null,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: confirmController,
                 obscureText: true,
@@ -1524,14 +1525,14 @@ class _StatCard extends StatelessWidget {
           color: cardColor,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8, offset: const Offset(0, 2))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, color: color, size: 22),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(value,
                 style: TextStyle(
                     fontSize: 22, fontWeight: FontWeight.w800, color: color)),
@@ -1562,14 +1563,14 @@ class _QuickAction extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withOpacity(0.2)),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
         ),
         child: Column(
           children: [
             Icon(icon, color: color, size: 28),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             Text(label,
                 style: TextStyle(
                     fontSize: 12, color: color, fontWeight: FontWeight.w600)),
@@ -1603,14 +1604,14 @@ class _ScanCard extends StatelessWidget {
         color: cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 6, offset: const Offset(0, 2))],
       ),
       child: Row(children: [
         Container(
           width: 46, height: 46,
           decoration: BoxDecoration(
-              color: rc.withOpacity(0.1), shape: BoxShape.circle),
+              color: rc.withValues(alpha: 0.1), shape: BoxShape.circle),
           child: Icon(
               item.result.riskLevel == RiskLevel.high
                   ? Icons.warning_rounded
@@ -1619,7 +1620,7 @@ class _ScanCard extends StatelessWidget {
                       : Icons.check_circle_rounded,
               color: rc, size: 24),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

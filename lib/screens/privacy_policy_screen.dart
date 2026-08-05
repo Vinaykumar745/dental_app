@@ -27,7 +27,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 fontStyle: FontStyle.italic,
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             _buildSection(
               title: '1. Data Collection',
               content: 'We collect images and basic demographic information (such as age and gender) solely for the purpose of analyzing oral lesions. We do not collect personally identifiable information (PII) beyond what is explicitly provided by the user for account management.',
@@ -58,8 +58,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
               textColor: textColor,
               textGreyColor: textGreyColor,
             ),
-            SizedBox(height: 40),
-            Center(
+            const SizedBox(height: 40),
+            const Center(
               child: Text(
                 'By using DentalScan AI, you agree to this Privacy Policy.',
                 textAlign: TextAlign.center,
@@ -69,7 +69,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -95,7 +95,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               color: textColor,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             content,
             style: TextStyle(

@@ -75,7 +75,7 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4))
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4))
                 ],
               ),
               child: Column(
@@ -85,7 +85,7 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(AppLocalizations.tr('model_status'),
-                          style: TextStyle(color: Colors.white70, fontSize: 14)),
+                          style: const TextStyle(color: Colors.white70, fontSize: 14)),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
@@ -98,11 +98,11 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(AppLocalizations.tr('oral_pathology_v32'),
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -114,13 +114,13 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             
             // Train Button
             ElevatedButton.icon(
               onPressed: _isTraining ? null : _simulateFurtherTraining,
               icon: _isTraining
-                  ? SizedBox(
+                  ? const SizedBox(
                       width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                   : const Icon(Icons.model_training),
               label: Text(_isTraining ? 'Training in progress...' : 'Continue Training (10 Epochs)'),
@@ -130,12 +130,12 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             // Accuracy Chart
             Text(AppLocalizations.tr('validation_accuracy'),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
-            SizedBox(height: 12),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+            const SizedBox(height: 12),
             Container(
               height: 220,
               padding: const EdgeInsets.all(16),
@@ -143,13 +143,13 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)
                 ],
               ),
               child: LineChart(
                 LineChartData(
-                  gridData: FlGridData(show: true, drawVerticalLine: false),
-                  titlesData: FlTitlesData(
+                  gridData: const FlGridData(show: true, drawVerticalLine: false),
+                  titlesData: const FlTitlesData(
                     rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
@@ -161,10 +161,10 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                       color: AppTheme.success,
                       barWidth: 3,
                       isStrokeCapRound: true,
-                      dotData: FlDotData(show: false),
+                      dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: AppTheme.success.withOpacity(0.2),
+                        color: AppTheme.success.withValues(alpha: 0.2),
                       ),
                     ),
                   ],
@@ -173,12 +173,12 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             // Loss Chart
             Text(AppLocalizations.tr('training_loss'),
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
-            SizedBox(height: 12),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+            const SizedBox(height: 12),
             Container(
               height: 220,
               padding: const EdgeInsets.all(16),
@@ -186,13 +186,13 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)
                 ],
               ),
               child: LineChart(
                 LineChartData(
-                  gridData: FlGridData(show: true, drawVerticalLine: false),
-                  titlesData: FlTitlesData(
+                  gridData: const FlGridData(show: true, drawVerticalLine: false),
+                  titlesData: const FlTitlesData(
                     rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
@@ -204,10 +204,10 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                       color: AppTheme.danger,
                       barWidth: 3,
                       isStrokeCapRound: true,
-                      dotData: FlDotData(show: false),
+                      dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: AppTheme.danger.withOpacity(0.2),
+                        color: AppTheme.danger.withValues(alpha: 0.2),
                       ),
                     ),
                   ],
@@ -216,7 +216,7 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -228,7 +228,7 @@ class _ModelTrainingScreenState extends State<ModelTrainingScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
-        SizedBox(height: 2),
+        const SizedBox(height: 2),
         Text(value, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
       ],
     );

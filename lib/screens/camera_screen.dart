@@ -101,7 +101,7 @@ class _CameraScreenState extends State<CameraScreen> {
       // Final decision: must have anatomy, OR must NOT have strictly invalid things. 
       // For safety and demonstration, let's reject if it lacks anatomy AND has invalid things, 
       // or simply reject if it lacks anatomy entirely.
-      bool isValid = hasAnatomy; 
+      bool isValid = hasAnatomy && !hasInvalid; 
       
       if (!isValid) {
         String topDetection = detectedObjects.isNotEmpty ? detectedObjects.first : "Unclear Object";
@@ -111,8 +111,8 @@ class _CameraScreenState extends State<CameraScreen> {
             builder: (ctx) => AlertDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               title: Row(children: [
-                Icon(Icons.warning_amber_rounded, color: AppTheme.danger, size: 28),
-                SizedBox(width: 8),
+                const Icon(Icons.warning_amber_rounded, color: AppTheme.danger, size: 28),
+                const SizedBox(width: 8),
                 Text(AppLocalizations.tr('invalid_image')),
               ]),
               content: Text(
@@ -214,7 +214,7 @@ class _CameraScreenState extends State<CameraScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(children: [
           Icon(type['icon'] as IconData, color: type['color'] as Color, size: 22),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text('Capture ${type['title']}'),
         ]),
         content: Column(
@@ -224,7 +224,7 @@ class _CameraScreenState extends State<CameraScreen> {
               type['instruction'] as String,
               style: const TextStyle(fontSize: 13, color: AppTheme.textGrey),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             // Camera option
             SizedBox(
               width: double.infinity,
@@ -243,7 +243,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             // Gallery option
             SizedBox(
               width: double.infinity,
@@ -262,7 +262,7 @@ class _CameraScreenState extends State<CameraScreen> {
               ),
             ),
             if (_images[index] != null) ...[
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextButton.icon(
                 onPressed: () {
                   Navigator.pop(ctx);
@@ -270,7 +270,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 },
                 icon: const Icon(Icons.delete_outline, color: AppTheme.danger),
                 label: Text(AppLocalizations.tr('remove_image'),
-                    style: TextStyle(color: AppTheme.danger)),
+                    style: const TextStyle(color: AppTheme.danger)),
               ),
             ],
           ],
@@ -324,7 +324,7 @@ class _CameraScreenState extends State<CameraScreen> {
               margin: const EdgeInsets.only(right: 16),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12)),
               child: Text('$_capturedCount/4',
                   style: const TextStyle(
@@ -349,7 +349,7 @@ class _CameraScreenState extends State<CameraScreen> {
                     children: [
                       Text(AppLocalizations.tr('progress'),
                           style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                               fontSize: 12)),
                       Text('${(_capturedCount / 4 * 100).toInt()}% Complete',
                           style: const TextStyle(
@@ -358,12 +358,12 @@ class _CameraScreenState extends State<CameraScreen> {
                               fontWeight: FontWeight.w600)),
                     ],
                   ),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
                       value: _capturedCount / 4,
-                      backgroundColor: Colors.white.withOpacity(0.3),
+                      backgroundColor: Colors.white.withValues(alpha: 0.3),
                       valueColor:
                           const AlwaysStoppedAnimation<Color>(Colors.white),
                       minHeight: 6,
@@ -379,17 +379,17 @@ class _CameraScreenState extends State<CameraScreen> {
                 color: Colors.white,
                 child: Row(children: [
                   const Icon(Icons.person, color: AppTheme.primary, size: 18),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(widget.patient.name,
                       style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           color: AppTheme.textDark)),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Container(
                       width: 1, height: 16, color: Colors.grey.shade300),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   const Icon(Icons.cake, color: AppTheme.textGrey, size: 16),
-                  SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   Text('${widget.patient.age} yrs',
                       style: const TextStyle(
                           color: AppTheme.textGrey, fontSize: 13)),
@@ -428,7 +428,7 @@ class _CameraScreenState extends State<CameraScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 8,
                               offset: const Offset(0, 2))
                         ],
@@ -442,7 +442,7 @@ class _CameraScreenState extends State<CameraScreen> {
                             decoration: BoxDecoration(
                                 color: isCaptured
                                     ? AppTheme.success
-                                    : (type['color'] as Color).withOpacity(0.1),
+                                    : (type['color'] as Color).withValues(alpha: 0.1),
                                 shape: BoxShape.circle),
                             child: isCaptured
                                 ? const Icon(Icons.check,
@@ -450,7 +450,7 @@ class _CameraScreenState extends State<CameraScreen> {
                                 : Icon(type['icon'] as IconData,
                                     color: type['color'] as Color, size: 22),
                           ),
-                          SizedBox(width: 14),
+                          const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,7 +462,7 @@ class _CameraScreenState extends State<CameraScreen> {
                                           fontSize: 15,
                                           color: AppTheme.textDark)),
                                   if (isCurrent && !isCaptured) ...[
-                                    SizedBox(width: 8),
+                                    const SizedBox(width: 8),
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 2),
@@ -471,22 +471,22 @@ class _CameraScreenState extends State<CameraScreen> {
                                           borderRadius:
                                               BorderRadius.circular(8)),
                                       child: Text(AppLocalizations.tr('current'),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 10,
                                               fontWeight: FontWeight.w600)),
                                     ),
                                   ],
                                 ]),
-                                SizedBox(height: 2),
+                                const SizedBox(height: 2),
                                 Text(type['subtitle'] as String,
                                     style: const TextStyle(
                                         fontSize: 12,
                                         color: AppTheme.textGrey)),
                                 if (isCaptured) ...[
-                                  SizedBox(height: 4),
+                                  const SizedBox(height: 4),
                                   Text(AppLocalizations.tr('image_captured'),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 12,
                                           color: AppTheme.success,
                                           fontWeight: FontWeight.w500)),
@@ -516,7 +516,7 @@ class _CameraScreenState extends State<CameraScreen> {
                                       borderRadius:
                                           BorderRadius.circular(10))),
                               child: Text(AppLocalizations.tr('capture'),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600)),
                             ),
@@ -534,7 +534,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 12,
                         offset: const Offset(0, -4))
                   ],
@@ -570,7 +570,7 @@ class _CameraScreenState extends State<CameraScreen> {
                                   ? Colors.white
                                   : AppTheme.textGrey,
                               size: 20),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
                               _allCaptured
                                   ? 'Analyze with AI'
@@ -593,18 +593,18 @@ class _CameraScreenState extends State<CameraScreen> {
           // Loading overlay when picking image
           if (_isPickingImage)
             Container(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               child: Center(
                 child: Card(
                   child: Padding(
-                    padding: EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(24),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        CircularProgressIndicator(color: AppTheme.primary),
-                        SizedBox(height: 16),
+                        const CircularProgressIndicator(color: AppTheme.primary),
+                        const SizedBox(height: 16),
                         Text(AppLocalizations.tr('opening_camera'),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 14, color: AppTheme.textGrey)),
                       ],
                     ),

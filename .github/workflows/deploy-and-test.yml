@@ -57,7 +57,7 @@ jobs:
         env:
           TEST_BASE_URL: http://127.0.0.1:5173/dental_app/
         # Use our custom reporter
-        run: npx mocha tests/mega_web_1100.test.js --reporter ./utils/excelReporter.js
+        run: npx mocha tests/mega_web_1100.test.js tests/e2e_dental_app.test.js --reporter ./utils/excelReporter.js
 
       - name: Inject HTML Reports into build/web
         if: always() # Run even if tests fail so reports are deployed
