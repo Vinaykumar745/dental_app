@@ -47,15 +47,57 @@ class ExcelReporter {
 
       const workbook = new ExcelJS.Workbook();
       
-      // Sheet 1: Selenium Test Report
-      const sheet1 = workbook.addWorksheet('Selenium Test Report');
+      // Sheet 1: API Test Report / E2E Report
+      const sheetName = process.env.REPORT_NAME ? process.env.REPORT_NAME.replace('.xlsx', '') : 'Test Report';
+      const sheet1 = workbook.addWorksheet(sheetName);
+      
+      // Match columns from the user's screenshot exactly
       sheet1.columns = [
-        { header: 'Test Name', key: 'title', width: 60 },
+        { header: '#', key: 'id', width: 5 },
+        { header: 'Test Suite', key: 'suite', width: 25 },
+        { header: 'Category', key: 'category', width: 20 },
+        { header: 'Test Case', key: 'title', width: 60 },
         { header: 'Status', key: 'status', width: 15 },
-        { header: 'Duration (ms)', key: 'duration', width: 15 },
-        { header: 'Error', key: 'error', width: 40 }
+        { header: 'Error Detail', key: 'error', width: 40 },
+        { header: 'Timestamp', key: 'timestamp', width: 25 }
       ];
-      this.results.forEach(res => sheet1.addRow(res));
+
+      // Format the header row
+      sheet1.getRow(1).font = { bold: true };
+      sheet1.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF000000' } };
+      sheet1.getRow(1).font = { color: { argb: 'FFFFFFFF' } };
+
+      this.results.forEach((res, index) => {
+        // Try to parse out a suite or category if the title has it, otherwise default
+        let suite = process.env.TEST_SUITE_NAME || 'Mega Suite';
+        let category = 'Integration';
+        
+        if (res.title.includes('Category:')) {
+           const parts = res.title.split('Category:');
+           if (parts.length > 1) {
+              category = parts[1].split(' ')[1] || 'Integration';
+           }
+        }
+
+        const row = sheet1.addRow({
+          id: index + 1,
+          suite: suite,
+          category: category,
+          title: res.title,
+          status: res.status.toUpperCase(),
+          error: res.error,
+          timestamp: new Date().toLocaleString()
+        });
+
+        // Add colors for pass/fail like the screenshot
+        if (res.status.toUpperCase() === 'PASS') {
+          row.getCell('status').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF00B050' } };
+          row.getCell('status').font = { color: { argb: 'FFFFFFFF' } };
+        } else {
+          row.getCell('status').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFF0000' } };
+          row.getCell('status').font = { color: { argb: 'FFFFFFFF' } };
+        }
+      });
 
       // Sheet 2: Testing Types Summary
       const sheet2 = workbook.addWorksheet('Testing Types Summary');
@@ -67,7 +109,8 @@ class ExcelReporter {
       sheet2.addRow({ metric: 'Passed', count: this.stats.passed });
       sheet2.addRow({ metric: 'Failed', count: this.stats.failed });
 
-      const excelPath = path.join(outDir, 'selenium-report.xlsx');
+      const reportFilename = process.env.REPORT_NAME || 'selenium-report.xlsx';
+      const excelPath = path.join(outDir, reportFilename);
       await workbook.xlsx.writeFile(excelPath);
       console.log(`Excel report saved to ${excelPath}`);
 
