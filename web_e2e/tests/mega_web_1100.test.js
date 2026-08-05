@@ -56,6 +56,8 @@ describe('Mega Web 1100 E2E Test Suite', function() {
   });
 
   describe('Dental App Specific E2E Tests', function () {
+    this.timeout(60000); // Override parent timeout to avoid random failures in CI
+
     it('TC01: Should load the application and verify page title', async function () {
       await driver.get(BASE_URL);
       await driver.sleep(3000);

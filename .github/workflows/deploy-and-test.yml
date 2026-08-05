@@ -51,8 +51,8 @@ jobs:
           mkdir -p ../build_serve/dental_app
           cp -r ../build/web/* ../build_serve/dental_app/
           npx -y serve ../build_serve -l 5173 &
-          sleep 4
-          curl -s http://127.0.0.1:5173/dental_app/ > /dev/null && echo "Server is up!"
+          timeout 30 bash -c 'until curl -s http://127.0.0.1:5173/dental_app/ > /dev/null; do sleep 1; done'
+          echo "Server is up!"
           npx mocha tests/mega_web_1100.test.js --reporter ./utils/excelReporter.js
 
       - name: Inject HTML Reports into build/web
