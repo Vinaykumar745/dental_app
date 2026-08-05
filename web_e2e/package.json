@@ -13,7 +13,6 @@
   "type": "commonjs",
   "devDependencies": {
     "chai": "^6.2.2",
-    "chromedriver": "^151.0.1",
     "exceljs": "^4.4.0",
     "mocha": "^11.7.6",
     "selenium-webdriver": "^4.46.0",
