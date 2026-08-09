@@ -277,7 +277,7 @@ class _HomeTab extends StatelessWidget {
                       children: [
                         Text(AppLocalizations.tr('welcome_back_1'),
                             style: const TextStyle(color: Colors.white70, fontSize: 13)),
-                        Text('Dr. ${userName ?? 'Doctor'}',
+                        Text('${userName ?? 'Doctor'}',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
