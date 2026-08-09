@@ -16,6 +16,7 @@ import 'disclaimer_screen.dart';
 import 'help_center_screen.dart';
 import 'model_training_screen.dart';
 import 'auth_screen.dart';
+import 'settings_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -249,14 +250,18 @@ class _HomeTab extends StatelessWidget {
             // Welcome card
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [AppTheme.primary, AppTheme.primaryLight],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(32),
+                boxShadow: [
+                  BoxShadow(color: AppTheme.primary.withValues(alpha: 0.25), blurRadius: 20, offset: const Offset(0, 8))
+                ],
+                border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1.5),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,100 +270,141 @@ class _HomeTab extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: Colors.white.withValues(alpha: 0.25),
                         shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
                       ),
-                      child: const Icon(Icons.local_hospital,
-                          color: Colors.white, size: 24),
+                      child: const Icon(Icons.person,
+                          color: Colors.white, size: 28),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 14),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(AppLocalizations.tr('welcome_back_1'),
-                            style: const TextStyle(color: Colors.white70, fontSize: 13)),
-                        Text('${userName ?? 'Doctor'}',
+                            style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+                        Text(userName ?? 'Doctor',
                             style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700)),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800)),
                       ],
                     ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.notifications_outlined, color: Colors.white, size: 22),
+                    )
                   ]),
-                  const SizedBox(height: 16),
-                  Text(
-                    DateFormat('EEEE, dd MMMM yyyy').format(DateTime.now()),
-                    style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8), fontSize: 13),
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_today, color: Colors.white, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          DateFormat('EEEE, dd MMMM yyyy').format(DateTime.now()),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 12),
                   Text(
                     '$totalPatients patient${totalPatients != 1 ? 's' : ''} • $totalScans scan${totalScans != 1 ? 's' : ''} recorded',
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
-                        fontWeight: FontWeight.w500),
+                        fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // Stats
             Row(children: [
               _StatCard(label: AppLocalizations.tr('high_risk'), value: highRisk.toString(),
                   color: AppTheme.danger, icon: Icons.warning_rounded),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               _StatCard(label: AppLocalizations.tr('moderate'), value: modRisk.toString(),
                   color: AppTheme.warning, icon: Icons.info_rounded),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               _StatCard(label: AppLocalizations.tr('low_risk'), value: lowRisk.toString(),
                   color: AppTheme.success, icon: Icons.check_circle_rounded),
             ]),
-            const SizedBox(height: 20),
+            const SizedBox(height: 28),
 
-            // Quick actions
-            _sectionTitle('Quick Actions', textDarkColor),
-            const SizedBox(height: 12),
-            Row(children: [
-              Expanded(
-                child: _QuickAction(
-                  icon: Icons.add_circle,
-                  label: AppLocalizations.tr('new_scan'),
-                  color: AppTheme.primary,
-                  onTap: () async {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (_) => const ConsentFlowScreen()),
-                    );
-                    onRefresh();
-                  },
-                ),
+            // Quick actions (Services)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Our Services',
+                    style: TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w800, color: textDarkColor)),
+                Icon(Icons.arrow_forward, color: textGreyColor, size: 20),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
+              child: Row(
+                children: [
+                  _QuickAction(
+                    icon: Icons.add_circle,
+                    label: AppLocalizations.tr('new_scan'),
+                    color: AppTheme.primary,
+                    onTap: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const ConsentFlowScreen()),
+                      );
+                      onRefresh();
+                    },
+                  ),
+                  _QuickAction(
+                    icon: Icons.history,
+                    label: AppLocalizations.tr('refresh'),
+                    color: AppTheme.accent,
+                    onTap: onRefresh,
+                  ),
+                  _QuickAction(
+                    icon: Icons.model_training,
+                    label: AppLocalizations.tr('ai_training'),
+                    color: AppTheme.warning,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const ModelTrainingScreen()),
+                      );
+                    },
+                  ),
+                  _QuickAction(
+                    icon: Icons.settings,
+                    label: 'Settings',
+                    color: AppTheme.primaryLight,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const SettingsScreen()),
+                      );
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _QuickAction(
-                  icon: Icons.history,
-                  label: AppLocalizations.tr('refresh'),
-                  color: AppTheme.accent,
-                  onTap: onRefresh,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _QuickAction(
-                  icon: Icons.model_training,
-                  label: AppLocalizations.tr('ai_training'),
-                  color: AppTheme.warning,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (_) => const ModelTrainingScreen()),
-                    );
-                  },
-                ),
-              ),
-            ]),
+            ),
             const SizedBox(height: 20),
 
             // Recent scans
@@ -1554,24 +1600,33 @@ class _StatCard extends StatelessWidget {
 
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(14),
+          color: cardColor.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white, width: 1.5),
           boxShadow: [BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8, offset: const Offset(0, 2))],
+              color: color.withValues(alpha: 0.08),
+              blurRadius: 15, offset: const Offset(0, 8))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: color, size: 22),
-            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(height: 12),
             Text(value,
                 style: TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.w800, color: color)),
+                    fontSize: 24, fontWeight: FontWeight.w800, color: color)),
+            const SizedBox(height: 2),
             Text(label,
-                style: TextStyle(fontSize: 11, color: textGreyColor)),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: textGreyColor)),
           ],
         ),
       ),
@@ -1595,19 +1650,33 @@ class _QuickAction extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(14),
+        width: 110,
+        margin: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withValues(alpha: 0.2)),
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: color.withValues(alpha: 0.15), width: 1.5),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 28),
-            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 10, offset: const Offset(0, 4))
+                ]
+              ),
+              child: Icon(icon, color: color, size: 28),
+            ),
+            const SizedBox(height: 12),
             Text(label,
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 12, color: color, fontWeight: FontWeight.w600)),
+                    fontSize: 13, color: color, fontWeight: FontWeight.w700)),
           ],
         ),
       ),
@@ -1632,41 +1701,44 @@ class _ScanCard extends StatelessWidget {
             ? AppTheme.warning
             : AppTheme.success;
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(12),
+        color: cardColor.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white, width: 1.5),
         boxShadow: [BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 6, offset: const Offset(0, 2))],
+            color: rc.withValues(alpha: 0.06),
+            blurRadius: 15, offset: const Offset(0, 6))],
       ),
       child: Row(children: [
         Container(
-          width: 46, height: 46,
+          width: 52, height: 52,
           decoration: BoxDecoration(
-              color: rc.withValues(alpha: 0.1), shape: BoxShape.circle),
+              color: rc.withValues(alpha: 0.1), 
+              borderRadius: BorderRadius.circular(16)),
           child: Icon(
               item.result.riskLevel == RiskLevel.high
                   ? Icons.warning_rounded
                   : item.result.riskLevel == RiskLevel.moderate
                       ? Icons.info_rounded
                       : Icons.check_circle_rounded,
-              color: rc, size: 24),
+              color: rc, size: 28),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(item.patient.name,
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       color: textDarkColor,
-                      fontSize: 14)),
+                      fontSize: 15)),
+              const SizedBox(height: 4),
               Text(item.result.lesionType,
                   style: TextStyle(
-                      fontSize: 12, color: textGreyColor)),
+                      fontSize: 13, color: textGreyColor, fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -1675,9 +1747,10 @@ class _ScanCard extends StatelessWidget {
           children: [
             Text('${item.result.cancerProbability.toInt()}%',
                 style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.w800, color: rc)),
+                    fontSize: 18, fontWeight: FontWeight.w800, color: rc)),
+            const SizedBox(height: 4),
             Text(DateFormat('dd MMM').format(item.date),
-                style: TextStyle(fontSize: 11, color: textGreyColor)),
+                style: TextStyle(fontSize: 12, color: textGreyColor, fontWeight: FontWeight.w600)),
           ],
         ),
       ]),

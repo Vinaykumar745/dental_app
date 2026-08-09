@@ -10,18 +10,135 @@ class ConsentFlowScreen extends StatefulWidget {
 }
 
 class _ConsentFlowScreenState extends State<ConsentFlowScreen> {
-  bool _agreed = false;
+  final List<bool> _consents = List.generate(3, (_) => false);
+
+  bool get _allAgreed => _consents.every((element) => element);
 
   void _onNext() {
-    if (_agreed) {
+    if (_allAgreed) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const PatientFormScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You must agree to proceed with the scan.')),
+        const SnackBar(content: Text('You must agree to all terms to proceed with the scan.')),
       );
     }
+  }
+
+  Widget _buildInfoCard({
+    required String title,
+    required String text,
+    required IconData icon,
+    required Color color,
+    required bool isDark,
+    required Color textColor,
+    required Color textGreyColor,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: isDark ? AppTheme.darkCardBg.withValues(alpha: 0.8) : Colors.white.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(18), bottomLeft: Radius.circular(18)),
+            ),
+            child: Icon(icon, color: color, size: 28),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    text,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: textGreyColor,
+                      height: 1.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConsentCard({
+    required String text,
+    required int index,
+    required bool isDark,
+    required Color textColor,
+    required Color textGreyColor,
+  }) {
+    final value = _consents[index];
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: isDark ? AppTheme.darkCardBg.withValues(alpha: 0.5) : Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: value ? AppTheme.primary.withValues(alpha: 0.5) : (isDark ? Colors.white12 : Colors.black12), width: 1.0),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Checkbox(
+            value: value,
+            activeColor: AppTheme.primary,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            onChanged: (val) {
+              setState(() => _consents[index] = val ?? false);
+            },
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() => _consents[index] = !value);
+              },
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: value ? textColor : textGreyColor,
+                  height: 1.4,
+                  fontWeight: value ? FontWeight.w600 : FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -32,7 +149,8 @@ class _ConsentFlowScreenState extends State<ConsentFlowScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('New Scan Setup'),
+        title: const Text('Patient Consent', style: TextStyle(fontWeight: FontWeight.w700)),
+        centerTitle: true,
       ),
       body: Column(
         children: [
@@ -43,106 +161,122 @@ class _ConsentFlowScreenState extends State<ConsentFlowScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Patient Consent & Disclaimer',
+                    'Important Information',
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: textColor,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'AI-GENERATED OUTPUT — NOT A DIAGNOSIS — MUST BE INDEPENDENTLY VERIFIED\n\n'
-                    'This application is a computer-generated, probabilistic risk estimate produced by pattern matching against a finite training dataset. It is NOT a diagnosis, NOT a pathology report, NOT a radiology report, and NOT a clinical opinion.\n\n'
-                    'THE ALGORITHM CAN BE WRONG IN BOTH DIRECTIONS:\n\n'
-                    'A LOW-RISK OR NEGATIVE RESULT DOES NOT EXCLUDE DYSPLASIA OR MALIGNANCY and must never be treated or communicated as reassurance.\n\n'
-                    'A HIGH-RISK RESULT DOES NOT ESTABLISH DISEASE; many benign conditions produce a high-risk output.\n\n'
-                    'Clinical responsibility rests entirely with the treating registered practitioner. Any clinically suspicious lesion must be referred and biopsied on clinical grounds irrespective of this output.\n\n'
-                    'PATIENT CONSENT\n\n'
-                    'Before proceeding, ensure you have obtained the following consents from the patient:\n\n'
-                    '1. I confirm that I have read or had read to me the Patient Information Sheet and had the opportunity to ask questions.\n\n'
-                    '2. I understand that a computer program using artificial intelligence will analyse photographs of my mouth, that its result is only an aid to my doctor, that it is not a diagnosis, that it can be wrong in both directions, and that only a biopsy examined by a pathologist can diagnose or rule out cancer. I understand that a low-risk result does not mean I am free of disease.\n\n'
-                    '3. I agree to photographs and/or video of my oral cavity being taken, and to my personal, clinical and habit information being entered into the application and processed for the purpose of my clinical care. I understand that my participation is voluntary, that I may withdraw at any time, and that my care will not be affected if I refuse.',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: textGreyColor,
-                      height: 1.6,
-                    ),
+                  
+                  _buildInfoCard(
+                    title: 'Purpose of the Scan',
+                    text: 'This scan is used to screen for potential anomalies in the oral cavity to support your overall dental health.',
+                    icon: Icons.info_outline_rounded,
+                    color: AppTheme.primary,
+                    isDark: isDark, textColor: textColor, textGreyColor: textGreyColor,
                   ),
+                  _buildInfoCard(
+                    title: 'AI is NOT a Diagnosis',
+                    text: 'The AI output is ONLY AN AID for your doctor. It can be wrong. Only a biopsy examined by a pathologist can diagnose or rule out cancer.',
+                    icon: Icons.warning_amber_rounded,
+                    color: AppTheme.warning,
+                    isDark: isDark, textColor: textColor, textGreyColor: textGreyColor,
+                  ),
+                  _buildInfoCard(
+                    title: 'Privacy & Data Security',
+                    text: 'Your personal data and images will be securely processed and stored in compliance with applicable healthcare privacy regulations.',
+                    icon: Icons.shield_outlined,
+                    color: AppTheme.success,
+                    isDark: isDark, textColor: textColor, textGreyColor: textGreyColor,
+                  ),
+                  _buildInfoCard(
+                    title: 'Voluntary Participation',
+                    text: 'Your participation is strictly VOLUNTARY. You have the right to withdraw your consent at any time before submission.',
+                    icon: Icons.pan_tool_outlined,
+                    color: Colors.purple,
+                    isDark: isDark, textColor: textColor, textGreyColor: textGreyColor,
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  const Divider(),
+                  const SizedBox(height: 16),
+                  
+                  Row(
+                    children: [
+                      const Icon(Icons.assignment_turned_in, color: AppTheme.primary, size: 24),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Terms & Conditions',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  _buildConsentCard(
+                    text: 'I confirm I have read the Patient Information Sheet and had all my questions answered.',
+                    index: 0,
+                    isDark: isDark, textColor: textColor, textGreyColor: textGreyColor,
+                  ),
+                  _buildConsentCard(
+                    text: 'I explicitly consent to my oral images being captured, uploaded, and analyzed by the application.',
+                    index: 1,
+                    isDark: isDark, textColor: textColor, textGreyColor: textGreyColor,
+                  ),
+                  _buildConsentCard(
+                    text: 'I agree to provide accurate medical history and cooperate in providing clear images.',
+                    index: 2,
+                    isDark: isDark, textColor: textColor, textGreyColor: textGreyColor,
+                  ),
+                  
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              color: isDark ? AppTheme.darkCardBg : Colors.white,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, -2),
+                  blurRadius: 15,
+                  offset: const Offset(0, -5),
                 ),
               ],
             ),
             child: SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _agreed,
-                        activeColor: AppTheme.primary,
-                        onChanged: (val) {
-                          setState(() {
-                            _agreed = val ?? false;
-                          });
-                        },
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _agreed = !_agreed;
-                            });
-                          },
-                          child: Text(
-                            'I confirm that the patient has provided these mandatory consents and I agree to the terms.',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: textColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _allAgreed ? _onNext : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primary,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                    disabledForegroundColor: isDark ? Colors.grey.shade600 : Colors.grey.shade500,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: _allAgreed ? 5 : 0,
                   ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _agreed ? _onNext : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primary,
-                        foregroundColor: Colors.white,
-                        disabledBackgroundColor: Colors.grey.shade300,
-                        disabledForegroundColor: Colors.grey.shade600,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'I Agree & Continue',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                  child: const Text(
+                    'I Agree & Continue',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ),

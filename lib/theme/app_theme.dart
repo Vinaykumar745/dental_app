@@ -5,22 +5,22 @@ class AppTheme {
   static final ValueNotifier<ThemeMode> themeModeNotifier = ValueNotifier(ThemeMode.light);
 
   // Brand colors (Medical/Dental Theme)
-  static const Color primary = Color(0xFF00796B);      // Deep Teal
-  static const Color primaryLight = Color(0xFF4DB6AC); // Soft Medical Blue/Teal
-  static const Color accent = Color(0xFF26A69A);       // Modern Medical Accent
-  static const Color success = Color(0xFF43A047);
-  static const Color warning = Color(0xFFFB8C00);
-  static const Color danger = Color(0xFFE53935);
-  static const Color background = Color(0xFFF4F8F9);   // Clean Slate
+  static const Color primary = Color(0xFF0F75BC);      // Deep Medical Blue
+  static const Color primaryLight = Color(0xFF38B6FF); // Bright Cyan Blue
+  static const Color accent = Color(0xFF00C4CC);       // Teal/Cyan Accent
+  static const Color success = Color(0xFF2E7D32);
+  static const Color warning = Color(0xFFF57C00);
+  static const Color danger = Color(0xFFD32F2F);
+  static const Color background = Color(0xFFF5F9FD);   // Clean Soft Blue Slate
   static const Color cardBg = Color(0xFFFFFFFF);
-  static const Color textDark = Color(0xFF263238);
-  static const Color textGrey = Color(0xFF78909C);
+  static const Color textDark = Color(0xFF1E293B);
+  static const Color textGrey = Color(0xFF64748B);
 
   // Dark Mode Colors
-  static const Color darkBackground = Color(0xFF121212);
-  static const Color darkCardBg = Color(0xFF1E1E1E);
-  static const Color darkTextDark = Color(0xFFE0E0E0);
-  static const Color darkTextGrey = Color(0xFF9E9E9E);
+  static const Color darkBackground = Color(0xFF0B1120); // Deep dark blue
+  static const Color darkCardBg = Color(0xFF1E293B);
+  static const Color darkTextDark = Color(0xFFF1F5F9);
+  static const Color darkTextGrey = Color(0xFF94A3B8);
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -34,10 +34,10 @@ class AppTheme {
         brightness: Brightness.light,
       ),
       scaffoldBackgroundColor: background,
-      fontFamily: 'Roboto',
+      fontFamily: 'Inter', // Try modern font if available, else falls back to system
       appBarTheme: const AppBarTheme(
-        backgroundColor: primary,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        foregroundColor: textDark,
         elevation: 0,
         centerTitle: true,
       ),
@@ -47,11 +47,11 @@ class AppTheme {
           foregroundColor: Colors.white,
           minimumSize: const Size(double.infinity, 54),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(24), // Highly rounded like DentaCare
           ),
           textStyle: const TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             letterSpacing: 0.5,
           ),
         ),
@@ -62,45 +62,46 @@ class AppTheme {
           side: const BorderSide(color: primary, width: 1.5),
           minimumSize: const Size(double.infinity, 54),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(24),
           ),
           textStyle: const TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: Colors.white.withValues(alpha: 0.9), // Glassy look
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
+          horizontal: 20,
+          vertical: 18,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(color: Colors.blueGrey.shade100.withValues(alpha: 0.3)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(color: Colors.blueGrey.shade100.withValues(alpha: 0.3)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: primary, width: 2),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: primaryLight, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: danger),
         ),
         labelStyle: const TextStyle(color: textGrey),
       ),
       cardTheme: CardThemeData(
-        color: cardBg,
-        elevation: 2,
-        shadowColor: Colors.black12,
+        color: cardBg.withValues(alpha: 0.9), // Glassmorphism base
+        elevation: 0,
+        shadowColor: primary.withValues(alpha: 0.1), // Soft blue shadow
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: Colors.white, width: 1.5), // White border for glass effect
         ),
       ),
     );
@@ -118,10 +119,10 @@ class AppTheme {
         brightness: Brightness.dark,
       ),
       scaffoldBackgroundColor: darkBackground,
-      fontFamily: 'Roboto',
+      fontFamily: 'Inter',
       appBarTheme: const AppBarTheme(
-        backgroundColor: darkCardBg,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        foregroundColor: darkTextDark,
         elevation: 0,
         centerTitle: true,
       ),
@@ -131,11 +132,11 @@ class AppTheme {
           foregroundColor: Colors.black,
           minimumSize: const Size(double.infinity, 54),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(24),
           ),
           textStyle: const TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             letterSpacing: 0.5,
           ),
         ),
@@ -146,45 +147,46 @@ class AppTheme {
           side: const BorderSide(color: primaryLight, width: 1.5),
           minimumSize: const Size(double.infinity, 54),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(24),
           ),
           textStyle: const TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: darkCardBg,
+        fillColor: darkCardBg.withValues(alpha: 0.8),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
+          horizontal: 20,
+          vertical: 18,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.white24),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: Colors.white12),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.white24),
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: Colors.white12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: primaryLight, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: danger),
         ),
         labelStyle: const TextStyle(color: darkTextGrey),
       ),
       cardTheme: CardThemeData(
-        color: darkCardBg,
-        elevation: 4,
-        shadowColor: Colors.black54,
+        color: darkCardBg.withValues(alpha: 0.8),
+        elevation: 0,
+        shadowColor: Colors.black26,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: Colors.white10, width: 1),
         ),
       ),
     );
