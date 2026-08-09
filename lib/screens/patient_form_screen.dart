@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import '../services/localization_service.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import '../theme/app_theme.dart';
 import '../models/patient_model.dart';
 import 'camera_screen.dart';
-import 'tutorial_screen.dart';
+
 import '../services/api_service.dart';
 
 class PatientFormScreen extends StatefulWidget {
@@ -21,6 +21,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();
   final _mobileController = TextEditingController();
+  String? _selectedGender;
   DateTime? _selectedDate;
   bool _isLoading = false;
 
@@ -57,9 +58,6 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
     }
     setState(() => _isLoading = true);
     
-    // Check if user skipped tutorial
-    final prefs = await SharedPreferences.getInstance();
-    final skipTutorial = prefs.getBool('skip_tutorial') ?? false;
 
     // Fetch existing patients to determine serial number
     int serialNum = 1;
@@ -84,6 +82,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
       id: newId,
       name: _nameController.text.trim(),
       age: int.parse(_ageController.text.trim()),
+      gender: _selectedGender!,
       date: _selectedDate!,
       mobile: _mobileController.text.trim(),
       createdAt: DateTime.now(),
@@ -91,15 +90,9 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
     if (!mounted) return;
     setState(() => _isLoading = false);
     
-    if (skipTutorial) {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => CameraScreen(patient: patient)),
-      );
-    } else {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => TutorialScreen(patient: patient)),
-      );
-    }
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => CameraScreen(patient: patient)),
+    );
   }
 
   @override
@@ -207,6 +200,28 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                   if (age == null || age < 1 || age > 120) return 'Enter a valid age (1-120)';
                   return null;
                 },
+              )),
+              const SizedBox(height: 14),
+              _card(DropdownButtonFormField<String>(
+                initialValue: _selectedGender,
+                items: ['Male', 'Female', 'Other'].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedGender = newValue;
+                  });
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Gender', hintText: 'Select gender',
+                  prefixIcon: Icon(Icons.people, color: AppTheme.primary),
+                  border: InputBorder.none, enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none, filled: false,
+                ),
+                validator: (v) => v == null ? 'Please select a gender' : null,
               )),
               const SizedBox(height: 14),
               _card(TextFormField(

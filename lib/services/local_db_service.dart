@@ -70,6 +70,21 @@ class LocalDatabaseService {
     await prefs.setString(_scansKey, newEncrypted);
   }
 
+  /// Get all Scans locally
+  static Future<List<ScanResult>> getAllScans() async {
+    final prefs = await SharedPreferences.getInstance();
+    final encryptedData = prefs.getString(_scansKey);
+    if (encryptedData == null) return [];
+
+    final decrypted = SecurityService.decryptData(encryptedData);
+    try {
+      final List<dynamic> scansList = jsonDecode(decrypted);
+      return scansList.map((e) => ScanResult.fromMap(e)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
   /// Get Patient Scans locally
   static Future<List<ScanResult>> getPatientScans(String patientId) async {
     final prefs = await SharedPreferences.getInstance();

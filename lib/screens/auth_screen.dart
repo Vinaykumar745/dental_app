@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+
 import '../services/localization_service.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import '../theme/app_theme.dart';
 import '../services/api_service.dart';
 import '../services/auth_state.dart';
@@ -107,112 +106,6 @@ class _AuthScreenState extends State<AuthScreen>
   }
 }
 
-// ── GOOGLE SIGN IN BUTTON ────────────────────────────────────
-class GoogleSignInButton extends StatefulWidget {
-  const GoogleSignInButton({super.key});
-  @override
-  State<GoogleSignInButton> createState() => _GoogleSignInButtonState();
-}
-
-class _GoogleSignInButtonState extends State<GoogleSignInButton> {
-  bool _isLoading = false;
-  GoogleSignIn? _googleSignIn;
-
-  GoogleSignIn _getGoogleSignIn() {
-    if (_googleSignIn == null) {
-      if (kIsWeb) {
-        _googleSignIn = GoogleSignIn(
-          scopes: ['email', 'profile'],
-          clientId: '1003206495688-5iit97k0lmdcs0jnp56aqg5guoiuij74.apps.googleusercontent.com',
-        );
-      } else {
-        _googleSignIn = GoogleSignIn(
-          scopes: ['email', 'profile'],
-          clientId: '1003206495688-5iit97k0lmdcs0jnp56aqg5guoiuij74.apps.googleusercontent.com',
-          serverClientId: '1003206495688-5iit97k0lmdcs0jnp56aqg5guoiuij74.apps.googleusercontent.com',
-        );
-      }
-    }
-    return _googleSignIn!;
-  }
-
-  Future<void> _handleGoogleSignIn() async {
-    setState(() => _isLoading = true);
-    try {
-      final account = await _getGoogleSignIn().signIn();
-      if (account == null) {
-        setState(() => _isLoading = false);
-        return;
-      }
-      final result = await ApiService.googleLogin(
-        name: account.displayName ?? 'User',
-        email: account.email,
-        photoUrl: account.photoUrl,
-      );
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-      if (result.success) {
-        await AuthState.save(
-          token: result.data['access_token'],
-          name: result.data['user']['name'],
-          email: result.data['user']['email'],
-        );
-        if (!mounted) return;
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const DashboardScreen()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result.error ?? 'Google sign in failed'),
-              backgroundColor: AppTheme.danger),
-        );
-      }
-    } catch (e) {
-      setState(() => _isLoading = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Google sign in error: $e'),
-              backgroundColor: AppTheme.danger),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _isLoading ? null : _handleGoogleSignIn,
-      child: Container(
-        width: double.infinity,
-        height: 54,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade300),
-          boxShadow: [BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8, offset: const Offset(0, 2))],
-        ),
-        child: _isLoading
-            ? const Center(child: SizedBox(width: 20, height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2,
-                    color: AppTheme.primary)))
-            : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Image.network(
-                  'https://developers.google.com/identity/images/g-logo.png',
-                  width: 24, height: 24,
-                  errorBuilder: (_, __, ___) =>
-                      const Icon(Icons.g_mobiledata, color: Colors.red, size: 24),
-                ),
-                const SizedBox(width: 12),
-                Text(AppLocalizations.tr('continue_with_google'),
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600,
-                        color: AppTheme.textDark)),
-              ]),
-      ),
-    );
-  }
-}
 
 // ── LOGIN FORM ───────────────────────────────────────────────
 class LoginForm extends StatefulWidget {
@@ -300,7 +193,7 @@ class _LoginFormState extends State<LoginForm> {
                           if (result.success) {
                             if (!ctx.mounted) return;
                             Navigator.pop(ctx);
-                            _showResetPasswordDialog(result.data['reset_token']);
+                            _showResetPasswordDialog();
                           } else {
                             setState(() => error = result.error);
                           }
@@ -317,7 +210,8 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  void _showResetPasswordDialog(String token) {
+  void _showResetPasswordDialog() {
+    final tokenCtrl = TextEditingController();
     final passCtrl = TextEditingController();
     bool isLoading = false;
     String? error;
@@ -334,7 +228,14 @@ class _LoginFormState extends State<LoginForm> {
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Enter your new password below.'),
+                  const Text('Enter the reset token sent to your email and your new password.'),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: tokenCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Reset Token',
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: passCtrl,
@@ -359,7 +260,12 @@ class _LoginFormState extends State<LoginForm> {
                   onPressed: isLoading
                       ? null
                       : () async {
+                          final token = tokenCtrl.text.trim();
                           final pw = passCtrl.text;
+                          if (token.isEmpty) {
+                            setState(() => error = 'Please enter the reset token');
+                            return;
+                          }
                           if (pw.length < 6) {
                             setState(() => error = 'Minimum 6 characters required');
                             return;
@@ -413,21 +319,7 @@ class _LoginFormState extends State<LoginForm> {
                 style: const TextStyle(fontSize: 14, color: AppTheme.textGrey)),
             const SizedBox(height: 24),
 
-            // Google Sign In
-            const GoogleSignInButton(),
-            const SizedBox(height: 16),
 
-            // Divider
-            Row(children: [
-              Expanded(child: Divider(color: Colors.grey.shade300)),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(AppLocalizations.tr('or'), style: const TextStyle(color: AppTheme.textGrey,
-                    fontSize: 12, fontWeight: FontWeight.w600)),
-              ),
-              Expanded(child: Divider(color: Colors.grey.shade300)),
-            ]),
-            const SizedBox(height: 16),
 
             TextFormField(
               controller: _emailController,
@@ -568,19 +460,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 style: const TextStyle(fontSize: 14, color: AppTheme.textGrey)),
             const SizedBox(height: 20),
 
-            // Google Sign Up
-            const GoogleSignInButton(),
-            const SizedBox(height: 16),
-            Row(children: [
-              Expanded(child: Divider(color: Colors.grey.shade300)),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(AppLocalizations.tr('or'), style: const TextStyle(color: AppTheme.textGrey,
-                    fontSize: 12, fontWeight: FontWeight.w600)),
-              ),
-              Expanded(child: Divider(color: Colors.grey.shade300)),
-            ]),
-            const SizedBox(height: 16),
+
 
             TextFormField(
               controller: _nameController,

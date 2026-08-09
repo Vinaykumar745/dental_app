@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../services/localization_service.dart';
 import '../theme/app_theme.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
@@ -13,7 +12,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.tr('privacy_policy')),
+        title: const Text('Privacy Policy'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -21,7 +20,16 @@ class PrivacyPolicyScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Last Updated: June 18, 2026',
+              'PRIVACY POLICY',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Data Processing Notice under DPDP Act & Health Data Guidelines',
               style: TextStyle(
                 color: textGreyColor,
                 fontStyle: FontStyle.italic,
@@ -29,45 +37,28 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             _buildSection(
-              title: '1. Data Collection',
-              content: 'We collect images and basic demographic information (such as age and gender) solely for the purpose of analyzing oral lesions. We do not collect personally identifiable information (PII) beyond what is explicitly provided by the user for account management.',
+              title: '1. Data Collection & Processing Purposes',
+              content: 'The Application processes personal and sensitive data solely for clinical risk stratification and patient care management:  Patient Identifiers: Name, age, sex, contact details, and hospital ID.  Clinical Data: Intra-oral photographic images/videos, tobacco/areca nut/alcohol habit history, and examination findings.  Technical & Audit Logs: Timestamps, device IDs, account credentials, and inference event logs to ensure security and medico-legal accountability.',
               textColor: textColor,
               textGreyColor: textGreyColor,
             ),
             _buildSection(
-              title: '2. Use of AI and Images',
-              content: 'Images uploaded for scanning are processed by our secure AI servers. Anonymized images may be retained to improve the accuracy of our machine learning models, in accordance with medical data research guidelines.',
+              title: '2. Data Minimisation & Security Safeguards',
+              content: 'Minimisation: Images are cropped to regions of interest to exclude facial features unless clinically necessary.  Security: Data is encrypted at rest and in transit. Access is strictly role-based and governed by multi-factor authentication.  No Commercial Misuse: Personal data is never sold, rented, or used for advertising, credit scoring, employment screening, or insurance underwriting.',
               textColor: textColor,
               textGreyColor: textGreyColor,
             ),
             _buildSection(
-              title: '3. Data Security',
-              content: 'We implement industry-standard encryption protocols (TLS/SSL) for data transmission. All stored data is encrypted at rest using AES-256 standards to prevent unauthorized access.',
+              title: '3. Data Principal Rights',
+              content: 'Patients (Data Principals) hold explicit rights regarding their personal data:  Right to access summary details of processed data and third-party disclosures.  Right to correction of inaccurate or incomplete health records.  Right to withdraw consent at any time without affecting ongoing standard care.  Right to request erasure (subject to mandatory medical record retention laws).',
               textColor: textColor,
               textGreyColor: textGreyColor,
             ),
             _buildSection(
-              title: '4. Third-Party Sharing',
-              content: 'We do not sell, trade, or otherwise transfer your data to outside parties. This does not include trusted third parties who assist us in operating our application, provided those parties agree to keep this information confidential.',
+              title: '4. Data Retention & Breach Protocol',
+              content: 'Retention: Identifiable health data is retained in accordance with statutory medical record retention timelines, after which it is erased or irreversibly anonymised.  Breach Notification: In the event of a personal data breach, notifications will be issued to affected individuals and the Data Protection Board of India per statutory requirements.',
               textColor: textColor,
               textGreyColor: textGreyColor,
-            ),
-            _buildSection(
-              title: '5. User Rights',
-              content: 'You have the right to request access to, modification of, or deletion of your personal data at any time. To exercise these rights, please contact our support team.',
-              textColor: textColor,
-              textGreyColor: textGreyColor,
-            ),
-            const SizedBox(height: 40),
-            const Center(
-              child: Text(
-                'By using DentalScan AI, you agree to this Privacy Policy.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.primary,
-                ),
-              ),
             ),
             const SizedBox(height: 20),
           ],
@@ -95,13 +86,13 @@ class PrivacyPolicyScreen extends StatelessWidget {
               color: textColor,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             content,
             style: TextStyle(
               fontSize: 15,
               color: textGreyColor,
-              height: 1.5,
+              height: 1.6,
             ),
           ),
         ],

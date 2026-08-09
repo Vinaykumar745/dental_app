@@ -7,16 +7,19 @@ import '../services/api_service.dart';
 import '../services/local_db_service.dart';
 import '../services/auth_state.dart';
 import '../services/localization_service.dart';
-import 'patient_form_screen.dart';
-import 'auth_screen.dart';
-import 'model_training_screen.dart';
-import 'privacy_policy_screen.dart';
-import 'help_center_screen.dart';
+import '../services/report_service.dart';
+import 'consent_flow_screen.dart';
 import 'about_app_screen.dart';
+import 'terms_conditions_screen.dart';
+import 'privacy_policy_screen.dart';
+import 'disclaimer_screen.dart';
+import 'help_center_screen.dart';
+import 'model_training_screen.dart';
+import 'auth_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import '../services/report_service.dart';
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -156,7 +159,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   history: _history,
                   onRefresh: _loadData,
                 ),
-                _ProfileTab(onLogout: _logout),
+                _ProfileTab(
+                  onLogout: _logout,
+                  totalPatients: _stats['totalPatients'] ?? _history.length,
+                  totalScans: _stats['totalScans'] ?? _history.length,
+                ),
               ],
             ),
       bottomNavigationBar: NavigationBar(
@@ -187,7 +194,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onPressed: () async {
                 await Navigator.of(context).push(
                   MaterialPageRoute(
-                      builder: (_) => const PatientFormScreen()),
+                      builder: (_) => const ConsentFlowScreen()),
                 );
                 _loadData();
               },
@@ -322,7 +329,7 @@ class _HomeTab extends StatelessWidget {
                   onTap: () async {
                     await Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (_) => const PatientFormScreen()),
+                          builder: (_) => const ConsentFlowScreen()),
                     );
                     onRefresh();
                   },
@@ -789,7 +796,14 @@ class _PatientsTabState extends State<_PatientsTab> {
 // ══════════════════════════════════════════════════════════════
 class _ProfileTab extends StatefulWidget {
   final VoidCallback onLogout;
-  const _ProfileTab({required this.onLogout});
+  final int totalPatients;
+  final int totalScans;
+
+  const _ProfileTab({
+    required this.onLogout,
+    required this.totalPatients,
+    required this.totalScans,
+  });
 
   @override
   State<_ProfileTab> createState() => _ProfileTabState();
@@ -1042,7 +1056,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text('Dr. $name',
+                Text(name,
                     style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w800,
@@ -1089,11 +1103,11 @@ class _ProfileTabState extends State<_ProfileTab> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _statItem('Patients', '1,284', Icons.people_outline, Colors.blue, textColor, textGreyColor),
+                    _statItem('Patients', NumberFormat('#,##0').format(widget.totalPatients), Icons.people_outline, Colors.blue, textColor, textGreyColor),
                     Container(width: 1, height: 40, color: Colors.grey.shade200),
-                    _statItem('Scans', '3,492', Icons.document_scanner_outlined, Colors.purple, textColor, textGreyColor),
+                    _statItem('Scans', NumberFormat('#,##0').format(widget.totalScans), Icons.document_scanner_outlined, Colors.purple, textColor, textGreyColor),
                     Container(width: 1, height: 40, color: Colors.grey.shade200),
-                    _statItem('Rating', _averageRating > 0 ? _averageRating.toStringAsFixed(1) : '-', Icons.star_outline, Colors.orange, textColor, textGreyColor),
+                    _statItem('Rating', _averageRating > 0 ? _averageRating.toStringAsFixed(1) : '0.0', Icons.star_outline, Colors.orange, textColor, textGreyColor),
                   ],
                 ),
               ),
@@ -1165,6 +1179,26 @@ class _ProfileTabState extends State<_ProfileTab> {
                           textColor: textColor,
                           textGreyColor: textGreyColor,
                           onTap: () => _showChangePassword(context),
+                        ),
+                        const Divider(height: 1, indent: 60),
+                        _actionItem(
+                          icon: Icons.gavel_outlined,
+                          iconColor: Colors.deepOrange,
+                          title: 'Terms & Conditions',
+                          subtitle: 'Read our terms of use',
+                          textColor: textColor,
+                          textGreyColor: textGreyColor,
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsConditionsScreen())),
+                        ),
+                        const Divider(height: 1, indent: 60),
+                        _actionItem(
+                          icon: Icons.info_outline,
+                          iconColor: Colors.redAccent,
+                          title: 'Disclaimer',
+                          subtitle: 'Important medical disclaimers',
+                          textColor: textColor,
+                          textGreyColor: textGreyColor,
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DisclaimerScreen())),
                         ),
                         const Divider(height: 1, indent: 60),
                         _actionItem(

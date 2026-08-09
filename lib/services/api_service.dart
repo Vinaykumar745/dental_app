@@ -1,11 +1,29 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 import '../models/patient_model.dart';
 import '../models/result_model.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://dentalscan-backend.onrender.com';
+  // Toggle this to false to use the production backend
+  static const bool _useLocalBackend = false;
+
+  static String get baseUrl {
+    if (!_useLocalBackend) {
+      return 'https://dentalscan-backend.onrender.com';
+    }
+    if (kIsWeb) {
+      // Automatically use the host IP the web app is being served from
+      return 'http://${Uri.base.host}:8000';
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:8000'; // Android emulator localhost
+    } else {
+      return 'http://127.0.0.1:8000'; // iOS simulator and others
+    }
+  }
+  
   static String? _token;
 
   static Future<String?> getToken() async {
@@ -118,31 +136,6 @@ class ApiService {
     }
   }
 
-  static Future<ApiResult> googleLogin({
-    required String name,
-    required String email,
-    String? photoUrl,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/google-login'),
-        headers: {'Content-Type': 'application/json', 'Bypass-Tunnel-Reminder': 'true'},
-        body: jsonEncode({'name': name, 'email': email, 'photoUrl': photoUrl ?? ''}),
-      );
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        await saveToken(data['access_token']);
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_name', data['user']['name']);
-        await prefs.setString('user_email', data['user']['email']);
-        if (photoUrl != null) await prefs.setString('user_photo', photoUrl);
-        return ApiResult(success: true, data: data);
-      }
-      return ApiResult(success: false, error: data['detail'] ?? 'Google login failed');
-    } catch (e) {
-      return ApiResult(success: false, error: e.toString());
-    }
-  }
 
   static Future<void> logout() async {
     await clearToken();
@@ -164,14 +157,7 @@ class ApiService {
   static Future<ApiResult> savePatient(PatientModel patient) async {
     try {
       final headers = await _authHeaders();
-      final body = jsonEncode({
-        'id': patient.id,
-        'name': patient.name,
-        'age': patient.age,
-        'date': patient.date.toIso8601String(),
-        'mobile': patient.mobile,
-        'createdAt': patient.createdAt.toIso8601String(),
-      });
+      final body = jsonEncode(patient.toMap());
       final response = await http.post(Uri.parse('$baseUrl/patients'), headers: headers, body: body);
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) return ApiResult(success: true, data: data);
@@ -191,6 +177,7 @@ class ApiService {
           id: json['id'],
           name: json['name'],
           age: json['age'],
+          gender: json['gender'] ?? 'Unknown',
           date: DateTime.parse(json['date']),
           mobile: json['mobile'],
           createdAt: DateTime.parse(json['createdAt']),
@@ -209,22 +196,7 @@ class ApiService {
   }) async {
     try {
       final headers = await _authHeaders();
-      final body = jsonEncode({
-        'patientId': patientId,
-        'cancerProbability': result.cancerProbability,
-        'lesionType': result.lesionType,
-        'lesionLocations': result.lesionLocations,
-        'riskLevel': result.riskLevel,
-        'recommendation': result.recommendation,
-        'imageAnalysis': result.imageAnalysis.map((a) => {
-          'type': a.type,
-          'finding': a.finding,
-          'confidence': a.confidence,
-        }).toList(),
-        'scanDate': result.scanDate.toIso8601String(),
-        'diseaseName': result.diseaseName,
-        'diseaseMatchProbability': result.diseaseMatchProbability,
-      });
+      final body = jsonEncode(result.toMap());
       final response = await http.post(Uri.parse('$baseUrl/scans'), headers: headers, body: body);
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) return ApiResult(success: true, data: data);
@@ -268,6 +240,29 @@ class ApiService {
         return ApiResult(success: true, data: jsonDecode(response.body));
       }
       return ApiResult(success: false, error: 'Failed to fetch stats');
+    } catch (e) {
+      return ApiResult(success: false, error: e.toString());
+    }
+  }
+
+  static Future<ApiResult> validateImage(File imageFile, String expectedType) async {
+    try {
+      final request = http.MultipartRequest('POST', Uri.parse('$baseUrl/validate-image'));
+      final token = await getToken();
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+      
+      request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+      request.fields['expected_type'] = expectedType;
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      if (response.statusCode == 200) {
+        return ApiResult(success: true, data: jsonDecode(response.body));
+      }
+      return ApiResult(success: false, error: 'Validation failed');
     } catch (e) {
       return ApiResult(success: false, error: e.toString());
     }

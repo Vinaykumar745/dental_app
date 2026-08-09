@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/localization_service.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:google_mlkit_image_labeling/google_mlkit_image_labeling.dart';
 import '../models/patient_model.dart';
+import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import 'results_screen.dart';
-import 'tutorial_screen.dart';
+import '../widgets/video_tutorial_dialog.dart';
 
 class CameraScreen extends StatefulWidget {
   final PatientModel patient;
@@ -31,6 +32,7 @@ class _CameraScreenState extends State<CameraScreen> {
       'color': const Color(0xFF7B1FA2),
       'instruction': 'Open your mouth wide and stick out your tongue.',
       'tip': 'Make sure the full top surface of the tongue is visible.',
+      'videoPath': 'assets/videos/tongue.mp4',
     },
     {
       'title': 'Gums',
@@ -39,6 +41,7 @@ class _CameraScreenState extends State<CameraScreen> {
       'color': const Color(0xFFC62828),
       'instruction': 'Pull lips back to expose gums completely.',
       'tip': 'Good lighting helps capture gum color accurately.',
+      'videoPath': 'assets/videos/gums.mp4',
     },
     {
       'title': 'Floor of Mouth',
@@ -47,6 +50,7 @@ class _CameraScreenState extends State<CameraScreen> {
       'color': const Color(0xFF1565C0),
       'instruction': 'Lift tongue to roof of mouth to expose the floor.',
       'tip': 'This area is critical for early cancer detection.',
+      'videoPath': 'assets/videos/floor_of_mouth.mp4',
     },
     {
       'title': 'Buccal Mucosa',
@@ -55,6 +59,7 @@ class _CameraScreenState extends State<CameraScreen> {
       'color': const Color(0xFF2E7D32),
       'instruction': 'Pull cheek outward gently to expose the inner lining.',
       'tip': 'Capture both left and right cheeks if possible.',
+      'videoPath': 'assets/videos/buccal_mucosa.mp4',
     },
   ];
 
@@ -62,78 +67,72 @@ class _CameraScreenState extends State<CameraScreen> {
   bool get _allCaptured => _capturedCount == 4;
 
   Future<bool> _validateImage(int index, XFile photo) async {
-    if (kIsWeb) return true; // MOCK ML KIT FOR WEB TO AVOID CRASH
-    // REAL ML VALIDATION USING GOOGLE ML KIT
+    if (kIsWeb) return true; // File picker behaves differently on web, bypass for now
+    
+    // Show a loading dialog while validating with the backend
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          content: Row(
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(width: 20),
+              Text('Validating ${_imageTypes[index]['title']}...'),
+            ],
+          ),
+        ),
+      );
+    }
+
     try {
-      final inputImage = InputImage.fromFilePath(photo.path);
-      final imageLabeler = ImageLabeler(options: ImageLabelerOptions(confidenceThreshold: 0.5));
+      final expectedType = _imageTypes[index]['title'];
+      final apiResult = await ApiService.validateImage(File(photo.path), expectedType);
       
-      final List<ImageLabel> labels = await imageLabeler.processImage(inputImage);
-      await imageLabeler.close();
+      // Close the loading dialog
+      if (mounted) Navigator.pop(context);
 
-      // Check if image contains any human anatomy or oral-related tags
-      final validKeywords = ['mouth', 'lip', 'tooth', 'teeth', 'jaw', 'skin', 'face', 'head', 'flesh', 'gum', 'tongue', 'anatomy', 'human body', 'person'];
-      
-      bool hasAnatomy = false;
-      List<String> detectedObjects = [];
+      if (apiResult.success) {
+        final isValid = apiResult.data['valid'] == true;
+        final detected = apiResult.data['detected'] ?? 'unknown';
 
-      for (ImageLabel label in labels) {
-        final text = label.label.toLowerCase();
-        detectedObjects.add(text);
-        for (String keyword in validKeywords) {
-          if (text.contains(keyword)) {
-            hasAnatomy = true;
-            break;
-          }
-        }
-      }
-
-      // If no labels were detected at all, it's a very unclear image. Let's be strict.
-      if (labels.isEmpty) hasAnatomy = false;
-
-      // Also specifically reject "Paper", "Document", "Computer", "Laptop" even if 'skin' is lightly detected in background
-      final invalidKeywords = ['paper', 'document', 'text', 'font', 'computer', 'laptop', 'car', 'vehicle', 'furniture', 'screen', 'monitor'];
-      bool hasInvalid = false;
-      for (String text in detectedObjects) {
-        if (invalidKeywords.contains(text)) hasInvalid = true;
-      }
-
-      // Final decision: must have anatomy, OR must NOT have strictly invalid things. 
-      // For safety and demonstration, let's reject if it lacks anatomy AND has invalid things, 
-      // or simply reject if it lacks anatomy entirely.
-      bool isValid = hasAnatomy && !hasInvalid; 
-      
-      if (!isValid) {
-        String topDetection = detectedObjects.isNotEmpty ? detectedObjects.first : "Unclear Object";
-        if (mounted) {
-          showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: Row(children: [
-                const Icon(Icons.warning_amber_rounded, color: AppTheme.danger, size: 28),
-                const SizedBox(width: 8),
-                Text(AppLocalizations.tr('invalid_image')),
-              ]),
-              content: Text(
-                'AI Analysis detected: "$topDetection".\n\nThis image does not appear to be a valid ${_imageTypes[index]['title']} image. Please avoid uploading unrelated images (e.g., paper, laptops, cars, scenery).',
-                style: const TextStyle(fontSize: 14),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: Text(AppLocalizations.tr('try_again')),
+        if (!isValid) {
+          if (mounted) {
+            showDialog(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                title: const Row(children: [
+                  Icon(Icons.warning_amber_rounded, color: AppTheme.danger, size: 28),
+                  SizedBox(width: 8),
+                  Text('Incorrect Photo Type'),
+                ]),
+                content: Text(
+                  'The AI detected a "$detected".\n\nThis slot is specifically for your $expectedType. Please take a clear picture of the correct area.',
+                  style: const TextStyle(fontSize: 14),
                 ),
-              ],
-            ),
-          );
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: Text(AppLocalizations.tr('try_again')),
+                  ),
+                ],
+              ),
+            );
+          }
+          return false;
         }
-        return false;
+        return true;
+      } else {
+        debugPrint("Validation failed or model not loaded: ${apiResult.error}");
+        // Fail open if the server fails
+        return true; 
       }
-      return true;
     } catch (e) {
-      debugPrint("ML Kit error: $e");
-      return true; // Fallback to true if ML kit fails to init
+      if (mounted) Navigator.pop(context); // close dialog
+      debugPrint("API validation error: $e");
+      return true; // Fallback to true
     }
   }
 
@@ -205,7 +204,27 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  void _showSourceDialog(int index) {
+  void _showSourceDialog(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    final hideTutorial = prefs.getBool('hide_tutorial') ?? false;
+
+    if (hideTutorial) {
+      _showActualSourceDialog(index);
+      return;
+    }
+
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (ctx) => VideoTutorialDialog(
+          videoPath: _imageTypes[index]['videoPath'],
+          onProceed: () => _showActualSourceDialog(index),
+        ),
+      );
+    }
+  }
+
+  void _showActualSourceDialog(int index) {
     final type = _imageTypes[index];
     showDialog(
       context: context,
@@ -308,17 +327,6 @@ class _CameraScreenState extends State<CameraScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline, color: Colors.white),
-            tooltip: AppLocalizations.tr('how_to_capture'),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => TutorialScreen(patient: widget.patient),
-                ),
-              );
-            },
-          ),
           Center(
             child: Container(
               margin: const EdgeInsets.only(right: 16),

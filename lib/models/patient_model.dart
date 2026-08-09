@@ -2,6 +2,7 @@ class PatientModel {
   final String id;
   final String name;
   final int age;
+  final String gender;
   final DateTime date;
   final String mobile;
   final DateTime createdAt;
@@ -10,6 +11,7 @@ class PatientModel {
     required this.id,
     required this.name,
     required this.age,
+    required this.gender,
     required this.date,
     required this.mobile,
     required this.createdAt,
@@ -20,6 +22,7 @@ class PatientModel {
       'id': id,
       'name': name,
       'age': age,
+      'gender': gender,
       'date': date.toIso8601String(),
       'mobile': mobile,
       'createdAt': createdAt.toIso8601String(),
@@ -31,6 +34,7 @@ class PatientModel {
       id: map['id'],
       name: map['name'],
       age: map['age'],
+      gender: map['gender'] ?? 'Unknown',
       date: DateTime.parse(map['date']),
       mobile: map['mobile'],
       createdAt: DateTime.parse(map['createdAt']),
