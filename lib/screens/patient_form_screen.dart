@@ -27,21 +27,95 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
-    final picked = await showDatePicker(
+    final firstDate = DateTime(now.year, now.month, now.day);
+    
+    final picked = await showDialog<DateTime>(
       context: context,
-      initialDate: now,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(now.year + 1),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppTheme.primary,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-            ),
+      builder: (context) {
+        DateTime tempSelectedDate = _selectedDate ?? firstDate;
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          backgroundColor: Colors.white,
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 140,
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppTheme.primary, AppTheme.primaryLight],
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      right: -10,
+                      bottom: -20,
+                      child: Image.asset(
+                        'assets/images/3d_tooth.png',
+                        height: 160,
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Select Appointment', style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w600)),
+                          SizedBox(height: 4),
+                          Text('Choose Date', style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: const ColorScheme.light(
+                    primary: AppTheme.primary,
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: AppTheme.textDark,
+                  ),
+                ),
+                child: CalendarDatePicker(
+                  initialDate: tempSelectedDate,
+                  firstDate: firstDate,
+                  lastDate: DateTime(now.year + 2),
+                  onDateChanged: (date) {
+                    tempSelectedDate = date;
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('CANCEL', style: TextStyle(color: AppTheme.textGrey, fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(tempSelectedDate),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primary,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        minimumSize: const Size(0, 0),
+                      ),
+                      child: const Text('CONFIRM', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          child: child!,
         );
       },
     );
@@ -114,9 +188,17 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Form(
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/dental_bg_3d.png'),
+            fit: BoxFit.cover,
+            opacity: 0.15,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -315,10 +397,10 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
                       ],
                     ),
               ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
+      ),
       ),
     );
   }

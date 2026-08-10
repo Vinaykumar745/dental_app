@@ -32,11 +32,15 @@ class _AuthScreenState extends State<AuthScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppTheme.primary, AppTheme.accent],
+        decoration: BoxDecoration(
+          color: AppTheme.darkBackground,
+          image: DecorationImage(
+            image: const AssetImage('assets/images/dental_bg_3d.png'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+              AppTheme.darkBackground.withValues(alpha: 0.3),
+              BlendMode.darken,
+            ),
           ),
         ),
         child: SafeArea(

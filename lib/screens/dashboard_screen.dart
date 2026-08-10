@@ -120,8 +120,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: bgColor,
+      extendBodyBehindAppBar: true, // Let background show behind app bar
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent, // Make AppBar transparent to show background
+        elevation: 0,
         title: Text(AppLocalizations.tr('dentalscan_ai')),
         actions: [
           IconButton(
@@ -135,38 +138,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(color: AppTheme.primary),
-                  const SizedBox(height: 16),
-                  Text(AppLocalizations.tr('loading_dashboard'),
-                      style: const TextStyle(color: AppTheme.textGrey)),
-                ],
-              ),
-            )
-          : IndexedStack(
-              index: _selectedIndex,
-              children: [
-                _HomeTab(
-                  userName: AuthState.userName,
-                  history: _history,
-                  stats: _stats,
-                  onRefresh: _loadData,
+      body: Container(
+        decoration: BoxDecoration(
+          color: bgColor,
+          image: const DecorationImage(
+            image: AssetImage('assets/images/dental_bg_3d.png'),
+            fit: BoxFit.cover,
+            opacity: 0.15, // Subtle opacity for the dashboard so cards stand out
+          ),
+        ),
+        child: SafeArea(
+          child: _isLoading
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(color: AppTheme.primary),
+                      const SizedBox(height: 16),
+                      Text(AppLocalizations.tr('loading_dashboard'),
+                          style: const TextStyle(color: AppTheme.textGrey)),
+                    ],
+                  ),
+                )
+              : IndexedStack(
+                  index: _selectedIndex,
+                  children: [
+                    _HomeTab(
+                      userName: AuthState.userName,
+                      history: _history,
+                      stats: _stats,
+                      onRefresh: _loadData,
+                    ),
+                    _PatientsTab(
+                      history: _history,
+                      onRefresh: _loadData,
+                    ),
+                    _ProfileTab(
+                      onLogout: _logout,
+                      totalPatients: _stats['totalPatients'] ?? _history.length,
+                      totalScans: _stats['totalScans'] ?? _history.length,
+                    ),
+                  ],
                 ),
-                _PatientsTab(
-                  history: _history,
-                  onRefresh: _loadData,
-                ),
-                _ProfileTab(
-                  onLogout: _logout,
-                  totalPatients: _stats['totalPatients'] ?? _history.length,
-                  totalScans: _stats['totalScans'] ?? _history.length,
-                ),
-              ],
-            ),
+        ),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (i) => setState(() => _selectedIndex = i),
