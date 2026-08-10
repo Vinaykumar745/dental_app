@@ -99,6 +99,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
         if (!isValid) {
           if (mounted) {
+            final errorMsg = apiResult.data['error'];
             showDialog(
               context: context,
               builder: (ctx) => AlertDialog(
@@ -109,7 +110,9 @@ class _CameraScreenState extends State<CameraScreen> {
                   Text('Incorrect Photo Type'),
                 ]),
                 content: Text(
-                  'The AI detected a "$detected".\n\nThis slot is specifically for your $expectedType. Please take a clear picture of the correct area.',
+                  errorMsg != null 
+                      ? 'Error: $errorMsg\n\nPlease try again.'
+                      : 'The AI detected a "$detected".\n\nThis slot is specifically for your $expectedType. Please take a clear picture of the correct area.',
                   style: const TextStyle(fontSize: 14),
                 ),
                 actions: [
@@ -126,13 +129,50 @@ class _CameraScreenState extends State<CameraScreen> {
         return true;
       } else {
         debugPrint("Validation failed or model not loaded: ${apiResult.error}");
-        // Fail open if the server fails
-        return true; 
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Row(children: [
+                Icon(Icons.error_outline, color: AppTheme.danger, size: 28),
+                SizedBox(width: 8),
+                Text('Validation Error'),
+              ]),
+              content: Text(
+                'Could not validate the image. Please check your connection to the AI server.\n\nError: ${apiResult.error}',
+                style: const TextStyle(fontSize: 14),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+        return false; // Fail closed instead of open
       }
     } catch (e) {
       if (mounted) Navigator.pop(context); // close dialog
       debugPrint("API validation error: $e");
-      return true; // Fallback to true
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Error'),
+            content: Text('An unexpected error occurred during validation:\n$e'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+      return false; // Fail closed
     }
   }
 

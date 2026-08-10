@@ -8,7 +8,7 @@ import '../models/result_model.dart';
 
 class ApiService {
   // Toggle this to false to use the production backend
-  static const bool _useLocalBackend = false;
+  static const bool _useLocalBackend = true;
 
   static String get baseUrl {
     if (!_useLocalBackend) {
@@ -18,9 +18,9 @@ class ApiService {
       // Automatically use the host IP the web app is being served from
       return 'http://${Uri.base.host}:8000';
     } else if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:8000'; // Android emulator localhost
+      return 'http://10.20.166.127:8000'; // Physical device connecting to laptop
     } else {
-      return 'http://127.0.0.1:8000'; // iOS simulator and others
+      return 'http://10.20.166.127:8000'; // Physical device connecting to laptop
     }
   }
   

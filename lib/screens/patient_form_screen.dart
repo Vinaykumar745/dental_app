@@ -255,6 +255,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
               _card(TextFormField(
                 controller: _nameController,
                 textCapitalization: TextCapitalization.words,
+                style: const TextStyle(color: AppTheme.textDark, fontSize: 16, fontWeight: FontWeight.w500),
                 decoration: const InputDecoration(
                   labelText: 'Full Name', hintText: "Enter patient's full name",
                   prefixIcon: Icon(Icons.person, color: AppTheme.primary),
@@ -270,6 +271,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
               _card(TextFormField(
                 controller: _ageController,
                 keyboardType: TextInputType.number,
+                style: const TextStyle(color: AppTheme.textDark, fontSize: 16, fontWeight: FontWeight.w500),
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   labelText: 'Age', hintText: "Enter patient's age",
@@ -286,6 +288,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
               const SizedBox(height: 14),
               _card(DropdownButtonFormField<String>(
                 initialValue: _selectedGender,
+                style: const TextStyle(color: AppTheme.textDark, fontSize: 16, fontWeight: FontWeight.w500),
                 items: ['Male', 'Female', 'Other'].map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -309,6 +312,7 @@ class _PatientFormScreenState extends State<PatientFormScreen> {
               _card(TextFormField(
                 controller: _mobileController,
                 keyboardType: TextInputType.phone,
+                style: const TextStyle(color: AppTheme.textDark, fontSize: 16, fontWeight: FontWeight.w500),
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 maxLength: 10,
                 decoration: InputDecoration(
