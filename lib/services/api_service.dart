@@ -8,7 +8,7 @@ import '../models/result_model.dart';
 
 class ApiService {
   // Toggle this to false to use the production backend
-  static const bool _useLocalBackend = true;
+  static const bool _useLocalBackend = false;
 
   static String get baseUrl {
     if (!_useLocalBackend) {
