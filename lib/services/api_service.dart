@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
 import '../models/result_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart' as dio;
@@ -16,13 +14,7 @@ class ApiService {
 
   // Base URL for Image Validation ONLY (uses local Python server to avoid Render sleep)
   static String get validationBaseUrl {
-    if (kIsWeb) {
-      return 'http://127.0.0.1:8000';
-    }
-    if (!kIsWeb && Platform.isAndroid) {
-      return 'http://10.156.147.127:8000'; 
-    }
-    return 'http://127.0.0.1:8000';
+    return 'https://dentalscan-backend.onrender.com';
   }
 
   // Ping the backend to wake it up from sleep (e.g., Render free tier)
