@@ -4,13 +4,12 @@ import '../services/localization_service.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import '../models/patient_model.dart';
 import '../models/result_model.dart';
+import '../services/auth_state.dart';
 
 class ReportService {
   static Future<void> generateAndDownloadReport({
     required BuildContext context,
-    required PatientModel patient,
     required ScanResult result,
     required DateTime scanDate,
   }) async {
@@ -67,7 +66,7 @@ class ReportService {
                               color: PdfColors.white,
                               fontSize: 22,
                               fontWeight: pw.FontWeight.bold)),
-                      pw.Text(AppLocalizations.tr('aipowered_oral_cancer_detection_report'),
+                      pw.Text(AppLocalizations.tr('pdf_report_title'),
                           style: const pw.TextStyle(
                               color: PdfColors.white, fontSize: 12)),
                     ],
@@ -104,7 +103,7 @@ class ReportService {
                           color: PdfColors.white,
                           fontSize: 18,
                           fontWeight: pw.FontWeight.bold)),
-                  pw.Text('Cancer Probability: ${result.cancerProbability.toInt()}%',
+                  pw.Text('AI Screening Risk Score: ${result.cancerProbability.toInt()}%',
                       style: pw.TextStyle(
                           color: PdfColors.white,
                           fontSize: 14,
@@ -115,7 +114,7 @@ class ReportService {
             pw.SizedBox(height: 20),
 
             // Patient information
-            pw.Text(AppLocalizations.tr('patient_information'),
+            pw.Text(AppLocalizations.tr('your_information'),
                 style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 10),
             pw.Container(
@@ -125,12 +124,9 @@ class ReportService {
                 borderRadius: pw.BorderRadius.circular(8),
               ),
               child: pw.Column(children: [
-                _pdfRow('Patient Name', patient.name),
-                _pdfRow('Age', '${patient.age} years'),
-                _pdfRow('Mobile', patient.mobile),
-                _pdfRow('Appointment Date', DateFormat('dd MMM yyyy').format(patient.date)),
+                _pdfRow('Name', AuthState.userName ?? 'User'),
+                _pdfRow('Email', AuthState.userEmail ?? 'N/A'),
                 _pdfRow('Scan Date', DateFormat('dd MMM yyyy HH:mm').format(scanDate)),
-                _pdfRow('Patient ID', patient.id),
               ]),
             ),
             pw.SizedBox(height: 20),
@@ -146,9 +142,9 @@ class ReportService {
                 borderRadius: pw.BorderRadius.circular(8),
               ),
               child: pw.Column(children: [
-                _pdfRow('Cancer Probability', '${result.cancerProbability.toInt()}%'),
+                _pdfRow('AI Screening Risk Score', '${result.cancerProbability.toInt()}%'),
                 _pdfRow('Risk Level', riskLabel),
-                _pdfRow('Detected Lesion', result.lesionType),
+                _pdfRow('Possible Finding', result.lesionType),
                 if (result.diseaseName != null && result.diseaseName!.isNotEmpty && result.diseaseName != 'Normal')
                   _pdfRow('Disease Match', result.diseaseName!),
                 if (result.diseaseMatchProbability != null && result.diseaseName != 'Normal')
@@ -233,7 +229,8 @@ class ReportService {
       );
 
       // Save/Download PDF
-      final fileName = 'DentalScan_${patient.name.replaceAll(' ', '_')}_${DateFormat('ddMMMyyyy').format(scanDate)}.pdf';
+      final userName = AuthState.userName?.replaceAll(' ', '_') ?? 'User';
+      final fileName = 'DentalScan_${userName}_${DateFormat('ddMMMyyyy').format(scanDate)}.pdf';
       final bytes = await pdf.save();
       await Printing.sharePdf(bytes: bytes, filename: fileName);
 

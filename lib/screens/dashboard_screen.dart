@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models/patient_model.dart';
+
 import '../models/result_model.dart';
 import '../theme/app_theme.dart';
 import '../services/api_service.dart';
-import '../services/local_db_service.dart';
+
 import '../services/auth_state.dart';
 import '../services/localization_service.dart';
 import '../services/report_service.dart';
@@ -14,9 +14,10 @@ import 'terms_conditions_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'disclaimer_screen.dart';
 import 'help_center_screen.dart';
-import 'model_training_screen.dart';
 import 'auth_screen.dart';
+import 'oral_health_tips_screen.dart';
 import 'settings_screen.dart';
+
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -43,28 +44,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     try {
-      final apiPatientsResult = await ApiService.getPatients();
-      final localPatients = apiPatientsResult.success ? (apiPatientsResult.data as List<PatientModel>) : <PatientModel>[];
-      final statsResult = await ApiService.getDashboardStats();
+      final apiScansResult = await ApiService.getMyScans();
+      final scans = apiScansResult.success 
+          ? (apiScansResult.data as List<dynamic>).map((e) => ScanResult.fromMap(e)).toList() 
+          : <ScanResult>[];
+      final highRisk = scans.where((s) => s.riskLevel == RiskLevel.high).length;
+      final modRisk = scans.where((s) => s.riskLevel == RiskLevel.moderate).length;
+      final lowRisk = scans.where((s) => s.riskLevel == RiskLevel.low).length;
+      
+      final statsResult = ApiResult(success: true, data: {
+        'totalScans': scans.length,
+        'highRisk': highRisk,
+        'moderateRisk': modRisk,
+        'lowRisk': lowRisk,
+      });
 
       if (mounted) {
         final List<_HistoryItem> items = [];
 
-        for (final patient in localPatients) {
-          final apiScansResult = await ApiService.getPatientScans(patient.id);
-          final patientScans = apiScansResult.success 
-              ? (apiScansResult.data as List<dynamic>).map((e) => ScanResult.fromMap(e)).toList() 
-              : <ScanResult>[];
-
-          if (patientScans.isNotEmpty) {
-            final latestScan = patientScans.last; // Get most recent
-            try {
-              items.add(
-                  _HistoryItem(patient: patient, result: latestScan, date: latestScan.scanDate));
-            } catch (e) {
-              debugPrint('Error loading scan for ${patient.name}: $e');
-            }
-          }
+        for (final scan in scans) {
+          items.add(_HistoryItem(result: scan, date: scan.scanDate));
         }
 
         // Sort by date descending
@@ -188,15 +187,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: navColor,
         indicatorColor: AppTheme.primary.withValues(alpha: 0.12),
         destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.dashboard_outlined),
-            selectedIcon: const Icon(Icons.dashboard, color: AppTheme.primary),
-            label: AppLocalizations.tr('dashboard'),
+          const NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home, color: AppTheme.primary),
+            label: 'Home',
           ),
           NavigationDestination(
             icon: const Icon(Icons.people_outlined),
             selectedIcon: const Icon(Icons.people, color: AppTheme.primary),
-            label: AppLocalizations.tr('patients'),
+            label: AppLocalizations.tr('my_scans'),
           ),
           NavigationDestination(
             icon: const Icon(Icons.person_outlined),
@@ -225,9 +224,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 // HOME TAB
-// ══════════════════════════════════════════════════════════════
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 class _HomeTab extends StatelessWidget {
   final String? userName;
   final List<_HistoryItem> history;
@@ -252,7 +251,7 @@ class _HomeTab extends StatelessWidget {
     final modRisk = stats['moderateRisk'] ?? 0;
     final lowRisk = stats['lowRisk'] ?? 0;
     final totalScans = stats['totalScans'] ?? history.length;
-    final totalPatients = stats['totalPatients'] ?? history.length;
+    
 
     return RefreshIndicator(
       onRefresh: () async => onRefresh(),
@@ -337,7 +336,7 @@ class _HomeTab extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    '$totalPatients patient${totalPatients != 1 ? 's' : ''} • $totalScans scan${totalScans != 1 ? 's' : ''} recorded',
+                    '$totalScans scan${totalScans != 1 ? 's' : ''} recorded',
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -396,13 +395,12 @@ class _HomeTab extends StatelessWidget {
                     onTap: onRefresh,
                   ),
                   _QuickAction(
-                    icon: Icons.model_training,
-                    label: AppLocalizations.tr('ai_training'),
+                    icon: Icons.health_and_safety,
+                    label: 'Oral Tips',
                     color: AppTheme.warning,
                     onTap: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const ModelTrainingScreen()),
+                        MaterialPageRoute(builder: (_) => const OralHealthTipsScreen()),
                       );
                     },
                   ),
@@ -412,8 +410,7 @@ class _HomeTab extends StatelessWidget {
                     color: AppTheme.primaryLight,
                     onTap: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const SettingsScreen()),
+                        MaterialPageRoute(builder: (_) => const SettingsScreen()),
                       );
                     },
                   ),
@@ -443,7 +440,7 @@ class _HomeTab extends StatelessWidget {
                             color: textGreyColor,
                             fontWeight: FontWeight.w600)),
                     const SizedBox(height: 4),
-                    Text(AppLocalizations.tr('tap_new_scan_to_get_started'),
+                    Text(AppLocalizations.tr('take_quick_scan'),
                         style: TextStyle(
                             fontSize: 13, color: textGreyColor.withValues(alpha: 0.8))),
                   ],
@@ -472,9 +469,9 @@ class _HomeTab extends StatelessWidget {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 // PATIENTS TAB
-// ══════════════════════════════════════════════════════════════
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 class _PatientsTab extends StatefulWidget {
   final List<_HistoryItem> history;
   final VoidCallback onRefresh;
@@ -496,8 +493,8 @@ class _PatientsTabState extends State<_PatientsTab> {
 
     final filtered = widget.history.where((item) {
       final q = _searchQuery.toLowerCase();
-      return item.patient.name.toLowerCase().contains(q) ||
-          item.patient.mobile.contains(q) ||
+      return (AuthState.userName ?? 'My Scan').toLowerCase().contains(q) ||
+          ''.contains(q) ||
           item.result.lesionType.toLowerCase().contains(q);
     }).toList();
 
@@ -510,7 +507,7 @@ class _PatientsTabState extends State<_PatientsTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${widget.history.length} Patient${widget.history.length != 1 ? 's' : ''} Found',
+                '${widget.history.length} Scan${widget.history.length != 1 ? 's' : ''} Found',
                 style: const TextStyle(color: Colors.white70, fontSize: 12),
               ),
               const SizedBox(height: 8),
@@ -523,7 +520,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                   onChanged: (v) => setState(() => _searchQuery = v),
                   style: TextStyle(color: textColor),
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.tr('search_by_name_mobile_or_lesion'),
+                    hintText: AppLocalizations.tr('search_by_date_or_lesion'),
                     hintStyle: TextStyle(color: textGreyColor),
                     prefixIcon: const Icon(Icons.search, color: AppTheme.primary),
                     border: InputBorder.none,
@@ -546,13 +543,13 @@ class _PatientsTabState extends State<_PatientsTab> {
                       Icon(Icons.people_outline,
                           size: 64, color: textGreyColor.withValues(alpha: 0.5)),
                       const SizedBox(height: 16),
-                      Text(AppLocalizations.tr('no_patients_yet'),
+                      Text(AppLocalizations.tr('no_scans_yet'),
                           style: TextStyle(
                               fontSize: 18,
                               color: textGreyColor,
                               fontWeight: FontWeight.w600)),
                       const SizedBox(height: 8),
-                      Text(AppLocalizations.tr('add_a_new_patient_scan_to_get_started'),
+                      Text(AppLocalizations.tr('add_a_new_scan_to_get_started'),
                           style: TextStyle(
                               fontSize: 14, color: textGreyColor.withValues(alpha: 0.8))),
                     ],
@@ -583,14 +580,14 @@ class _PatientsTabState extends State<_PatientsTab> {
                             radius: 24,
                             backgroundColor: rc.withValues(alpha: 0.15),
                             child: Text(
-                              item.patient.name[0].toUpperCase(),
+                              (AuthState.userName ?? 'U')[0].toUpperCase(),
                               style: TextStyle(
                                   color: rc,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 18),
                             ),
                           ),
-                          title: Text(item.patient.name,
+                          title: Text((AuthState.userName ?? 'My Scan'),
                               style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   color: textColor,
@@ -603,14 +600,14 @@ class _PatientsTabState extends State<_PatientsTab> {
                                 Icon(Icons.cake_outlined,
                                     size: 12, color: textGreyColor),
                                 const SizedBox(width: 4),
-                                Text('Age: ${item.patient.age}',
+                                Text('Age: ${'N/A'}',
                                     style: TextStyle(
                                         fontSize: 12, color: textGreyColor)),
                                 const SizedBox(width: 10),
                                 Icon(Icons.phone_outlined,
                                     size: 12, color: textGreyColor),
                                 const SizedBox(width: 4),
-                                Text(item.patient.mobile,
+                                Text('',
                                     style: TextStyle(
                                         fontSize: 12, color: textGreyColor)),
                               ]),
@@ -710,7 +707,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                   CircleAvatar(
                     radius: 28,
                     backgroundColor: rc.withValues(alpha: 0.2),
-                    child: Text(item.patient.name[0].toUpperCase(),
+                    child: Text((AuthState.userName ?? 'U')[0].toUpperCase(),
                         style: TextStyle(
                             fontSize: 22, color: rc, fontWeight: FontWeight.w700)),
                   ),
@@ -719,12 +716,12 @@ class _PatientsTabState extends State<_PatientsTab> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(item.patient.name,
+                        Text((AuthState.userName ?? 'My Scan'),
                             style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w700,
                                 color: AppTheme.textDark)),
-                        Text('Age: ${item.patient.age} • ${item.patient.mobile}',
+                        Text('Age: ${AuthState.userAge}',
                             style: const TextStyle(
                                 color: AppTheme.textGrey, fontSize: 13)),
                         const SizedBox(height: 4),
@@ -805,7 +802,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                         Navigator.pop(ctx);
                         await ReportService.generateAndDownloadReport(
                           context: context,
-                          patient: item.patient,
+                          
                           result: item.result,
                           scanDate: item.date,
                         );
@@ -852,9 +849,9 @@ class _PatientsTabState extends State<_PatientsTab> {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 // PROFILE TAB
-// ══════════════════════════════════════════════════════════════
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 class _ProfileTab extends StatefulWidget {
   final VoidCallback onLogout;
   final int totalPatients;
@@ -873,23 +870,15 @@ class _ProfileTab extends StatefulWidget {
 class _ProfileTabState extends State<_ProfileTab> {
   bool _notificationsEnabled = true;
   late bool _darkModeEnabled;
-  double _averageRating = 0.0;
+  
 
   @override
   void initState() {
     super.initState();
     _darkModeEnabled = AppTheme.themeModeNotifier.value == ThemeMode.dark;
-    _loadRating();
   }
 
-  Future<void> _loadRating() async {
-    final rating = await LocalDatabaseService.getAverageRating();
-    if (mounted) {
-      setState(() {
-        _averageRating = rating;
-      });
-    }
-  }
+
 
   Future<void> _showAvatarPicker() async {
     showModalBottomSheet(
@@ -1134,8 +1123,8 @@ class _ProfileTabState extends State<_ProfileTab> {
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                   ),
-                  child: Text(AppLocalizations.tr('senior_dental_surgeon'),
-                      style: const TextStyle(
+                  child: const Text('Registered User',
+                      style: TextStyle(
                           color: Colors.white,
                           fontSize: 13,
                           fontWeight: FontWeight.w600)),
@@ -1164,11 +1153,7 @@ class _ProfileTabState extends State<_ProfileTab> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _statItem('Patients', NumberFormat('#,##0').format(widget.totalPatients), Icons.people_outline, Colors.blue, textColor, textGreyColor),
-                    Container(width: 1, height: 40, color: Colors.grey.shade200),
-                    _statItem('Scans', NumberFormat('#,##0').format(widget.totalScans), Icons.document_scanner_outlined, Colors.purple, textColor, textGreyColor),
-                    Container(width: 1, height: 40, color: Colors.grey.shade200),
-                    _statItem('Rating', _averageRating > 0 ? _averageRating.toStringAsFixed(1) : '0.0', Icons.star_outline, Colors.orange, textColor, textGreyColor),
+                    _statItem('Scans Recorded', NumberFormat('#,##0').format(widget.totalScans), Icons.document_scanner_outlined, Colors.purple, textColor, textGreyColor),
                   ],
                 ),
               ),
@@ -1592,9 +1577,9 @@ class _ProfileTabState extends State<_ProfileTab> {
   }
 }
 
-// ══════════════════════════════════════════════════════════════
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 // REUSABLE WIDGETS
-// ══════════════════════════════════════════════════════════════
+// ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 
 class _StatCard extends StatelessWidget {
   final String label;
@@ -1745,7 +1730,7 @@ class _ScanCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(item.patient.name,
+              Text((AuthState.userName ?? 'My Scan'),
                   style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: textDarkColor,
@@ -1774,9 +1759,8 @@ class _ScanCard extends StatelessWidget {
 }
 
 class _HistoryItem {
-  final PatientModel patient;
   final ScanResult result;
   final DateTime date;
   _HistoryItem(
-      {required this.patient, required this.result, required this.date});
+      {required this.result, required this.date});
 }

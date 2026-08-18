@@ -2,9 +2,10 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:image_picker/image_picker.dart';
 import '../services/localization_service.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../models/patient_model.dart';
+
 import '../models/result_model.dart';
 import '../services/api_service.dart';
 import '../services/report_service.dart';
@@ -12,9 +13,9 @@ import '../theme/app_theme.dart';
 import '../widgets/feedback_dialog.dart';
 
 class ResultsScreen extends StatefulWidget {
-  final PatientModel patient;
-  final List<File> images;
-  const ResultsScreen({super.key, required this.patient, required this.images});
+  final List<XFile>? images;
+  final ScanResult? existingResult;
+  const ResultsScreen({super.key, this.images, this.existingResult});
 
   @override
   State<ResultsScreen> createState() => _ResultsScreenState();
@@ -53,7 +54,15 @@ class _ResultsScreenState extends State<ResultsScreen>
         CurvedAnimation(parent: _resultController, curve: Curves.easeIn));
     _slideAnim = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero)
         .animate(CurvedAnimation(parent: _resultController, curve: Curves.easeOut));
-    _startAnalysis();
+    
+    if (widget.existingResult != null) {
+      _isAnalyzing = false;
+      _result = widget.existingResult;
+      _savedToDb = true;
+      _resultController.forward();
+    } else {
+      _startAnalysis();
+    }
   }
 
   void _startAnalysis() async {
@@ -82,9 +91,7 @@ class _ResultsScreenState extends State<ResultsScreen>
 
   void _saveInBackground(ScanResult result) async {
     try {
-      // Secure backend save
-      await ApiService.savePatient(widget.patient);
-      final apiResult = await ApiService.saveScanResult(patientId: widget.patient.id, result: result);
+      final apiResult = await ApiService.saveScanResult(result: result);
       if (apiResult.success && mounted) setState(() => _savedToDb = true);
     } catch (e) {
       debugPrint('Background save error: $e');
@@ -112,7 +119,6 @@ class _ResultsScreenState extends State<ResultsScreen>
         : <String>[];
 
     return ScanResult(
-      patientId: widget.patient.id,
       cancerProbability: cancerProb.toDouble(),
       lesionType: detectedLesion['type']!,
       lesionLocations: locations,
@@ -176,7 +182,7 @@ class _ResultsScreenState extends State<ResultsScreen>
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: Text(AppLocalizations.tr('ai_analysis_results')),
+        title: Text(AppLocalizations.tr('your_oral_screening_result')),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
@@ -330,13 +336,11 @@ class _ResultsScreenState extends State<ResultsScreen>
                                 color: riskColor,
                                 letterSpacing: 1)),
                         const SizedBox(height: 4),
-                        Text('Cancer Probability: ${result.cancerProbability.toInt()}%',
+                        Text('AI Screening Risk Score: ${result.cancerProbability.toInt()}%',
                             style: TextStyle(
                                 fontSize: 14,
                                 color: riskColor.withValues(alpha: 0.8),
                                 fontWeight: FontWeight.w500)),
-                        Text('Patient: ${widget.patient.name}',
-                            style: const TextStyle(fontSize: 13, color: AppTheme.textGrey)),
                       ])),
                 ]),
               ),
@@ -516,7 +520,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                               Row(children: [
                                 const Icon(Icons.local_hospital, color: AppTheme.warning, size: 18),
                                 const SizedBox(width: 8),
-                                Text(AppLocalizations.tr('matched_disease'),
+                                Text(AppLocalizations.tr('possible_ai_suggested_finding'),
                                     style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
@@ -629,9 +633,16 @@ class _ResultsScreenState extends State<ResultsScreen>
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
-                                    child: kIsWeb 
-                                        ? Image.network(widget.images[i].path, width: 56, height: 56, fit: BoxFit.cover) 
-                                        : Image.file(widget.images[i], width: 56, height: 56, fit: BoxFit.cover),
+                                    child: (widget.images != null && i < widget.images!.length)
+                                        ? (kIsWeb 
+                                            ? Image.network(widget.images![i].path, width: 56, height: 56, fit: BoxFit.cover) 
+                                            : Image.file(File(widget.images![i].path), width: 56, height: 56, fit: BoxFit.cover))
+                                        : Container(
+                                            width: 56,
+                                            height: 56,
+                                            color: Colors.grey.shade200,
+                                            child: Icon(Icons.image, color: Colors.grey.shade400),
+                                          ),
                                   ),
                                   if (!isNormal && a.boundingBox != null)
                                     Positioned(
@@ -700,7 +711,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                        Text(AppLocalizations.tr('clinical_recommendation'),
+                        Text(AppLocalizations.tr('what_you_should_do_next'),
                             style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
@@ -735,7 +746,7 @@ class _ResultsScreenState extends State<ResultsScreen>
               OutlinedButton.icon(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.refresh),
-                label: Text(AppLocalizations.tr('rescan_patient')),
+                label: const Text('New Scan'),
                 style: OutlinedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 54),
                     shape: RoundedRectangleBorder(
@@ -748,7 +759,6 @@ class _ResultsScreenState extends State<ResultsScreen>
                 onPressed: () async {
                   await ReportService.generateAndDownloadReport(
                     context: context,
-                    patient: widget.patient,
                     result: result,
                     scanDate: result.scanDate,
                   );

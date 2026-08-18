@@ -4,15 +4,13 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/localization_service.dart';
 import 'package:image_picker/image_picker.dart';
-import '../models/patient_model.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import 'results_screen.dart';
 import '../widgets/video_tutorial_dialog.dart';
 
 class CameraScreen extends StatefulWidget {
-  final PatientModel patient;
-  const CameraScreen({super.key, required this.patient});
+  const CameraScreen({super.key});
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -20,7 +18,7 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen> {
   final ImagePicker _picker = ImagePicker();
-  final List<File?> _images = [null, null, null, null];
+  final List<XFile?> _images = [null, null, null, null];
   int _currentStep = 0;
   bool _isPickingImage = false;
 
@@ -67,8 +65,6 @@ class _CameraScreenState extends State<CameraScreen> {
   bool get _allCaptured => _capturedCount == 4;
 
   Future<bool> _validateImage(int index, XFile photo) async {
-    if (kIsWeb) return true; // File picker behaves differently on web, bypass for now
-    
     // Show a loading dialog while validating with the backend
     if (mounted) {
       showDialog(
@@ -88,7 +84,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
     try {
       final expectedType = _imageTypes[index]['title'];
-      final apiResult = await ApiService.validateImage(File(photo.path), expectedType);
+      final apiResult = await ApiService.validateImage(photo, expectedType);
       
       // Close the loading dialog
       if (mounted) Navigator.pop(context);
@@ -192,7 +188,7 @@ class _CameraScreenState extends State<CameraScreen> {
         
         if (isValid && mounted) {
           setState(() {
-            _images[index] = File(photo.path);
+            _images[index] = photo;
             if (index < 3) _currentStep = index + 1;
           });
         }
@@ -226,7 +222,7 @@ class _CameraScreenState extends State<CameraScreen> {
         
         if (isValid && mounted) {
           setState(() {
-            _images[index] = File(photo.path);
+            _images[index] = photo;
             if (index < 3) _currentStep = index + 1;
           });
         }
@@ -349,7 +345,6 @@ class _CameraScreenState extends State<CameraScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ResultsScreen(
-          patient: widget.patient,
           images: _images.map((e) => e!).toList(),
         ),
       ),
@@ -420,35 +415,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 ]),
               ),
 
-              // Patient info
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                color: Colors.white,
-                child: Row(children: [
-                  const Icon(Icons.person, color: AppTheme.primary, size: 18),
-                  const SizedBox(width: 8),
-                  Text(widget.patient.name,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.textDark)),
-                  const SizedBox(width: 12),
-                  Container(
-                      width: 1, height: 16, color: Colors.grey.shade300),
-                  const SizedBox(width: 12),
-                  const Icon(Icons.cake, color: AppTheme.textGrey, size: 16),
-                  const SizedBox(width: 4),
-                  Text('${widget.patient.age} yrs',
-                      style: const TextStyle(
-                          color: AppTheme.textGrey, fontSize: 13)),
-                  const Spacer(),
-                  Text(
-                      'ID: ${widget.patient.id.substring(widget.patient.id.length - 6)}',
-                      style: const TextStyle(
-                          color: AppTheme.textGrey, fontSize: 11)),
-                ]),
-              ),
-              const Divider(height: 1),
+              // (Patient info removed)
 
               // Image list
               Expanded(
@@ -549,7 +516,7 @@ class _CameraScreenState extends State<CameraScreen> {
                                 borderRadius: BorderRadius.circular(10),
                                 child: kIsWeb
                                     ? Image.network(image.path, width: 56, height: 56, fit: BoxFit.cover)
-                                    : Image.file(image, width: 56, height: 56, fit: BoxFit.cover),
+                                    : Image.file(File(image.path), width: 56, height: 56, fit: BoxFit.cover),
                               ),
                             )
                           else

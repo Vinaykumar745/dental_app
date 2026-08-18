@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../services/localization_service.dart';
 import '../theme/app_theme.dart';
@@ -408,6 +409,9 @@ class _SignUpFormState extends State<SignUpForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
+  final _mobileController = TextEditingController();
+  final _ageController = TextEditingController();
+  String? _selectedGender;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _isLoading = false;
@@ -420,6 +424,10 @@ class _SignUpFormState extends State<SignUpForm> {
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
+      age: int.tryParse(_ageController.text.trim()) ?? 0,
+      mobile: _mobileController.text.trim(),
+      dob: '',
+      gender: _selectedGender ?? "",
     );
     if (!mounted) return;
     setState(() => _isLoading = false);
@@ -444,6 +452,8 @@ class _SignUpFormState extends State<SignUpForm> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
+    _mobileController.dispose();
+    _ageController.dispose();
     super.dispose();
   }
 
@@ -474,6 +484,54 @@ class _SignUpFormState extends State<SignUpForm> {
                 prefixIcon: Icon(Icons.person_outlined, color: AppTheme.primary),
               ),
               validator: (v) => v == null || v.isEmpty ? 'Please enter your name' : null,
+            ),
+            const SizedBox(height: 14),
+            TextFormField(
+              controller: _mobileController,
+              keyboardType: TextInputType.phone,
+              maxLength: 10,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: const InputDecoration(
+                labelText: 'Mobile Number',
+                prefixIcon: Icon(Icons.phone_outlined, color: AppTheme.primary),
+                counterText: '',
+              ),
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'Please enter mobile number';
+                if (v.length != 10) return 'Mobile number must be exactly 10 digits';
+                return null;
+              },
+            ),
+            const SizedBox(height: 14),
+            TextFormField(
+              controller: _ageController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              decoration: const InputDecoration(
+                labelText: 'Age',
+                prefixIcon: Icon(Icons.cake_outlined, color: AppTheme.primary),
+              ),
+              validator: (v) => v == null || v.isEmpty ? 'Please enter your age' : null,
+            ),
+            const SizedBox(height: 14),
+            DropdownButtonFormField<String>(
+              initialValue: _selectedGender,
+              decoration: const InputDecoration(
+                labelText: 'Gender',
+                prefixIcon: Icon(Icons.people_alt_outlined, color: AppTheme.primary),
+              ),
+              items: ['Male', 'Female', 'Other', 'Prefer not to say']
+                  .map((label) => DropdownMenuItem(
+                        value: label,
+                        child: Text(label),
+                      ))
+                  .toList(),
+              onChanged: (val) {
+                setState(() {
+                  _selectedGender = val;
+                });
+              },
+              validator: (v) => v == null || v.isEmpty ? 'Please select gender' : null,
             ),
             const SizedBox(height: 14),
             TextFormField(

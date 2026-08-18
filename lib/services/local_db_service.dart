@@ -1,55 +1,15 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/patient_model.dart';
+// import removed
 import '../models/result_model.dart';
 import 'security_service.dart';
 
 class LocalDatabaseService {
-  static const String _patientsKey = 'secure_patients_db';
+
   static const String _scansKey = 'secure_scans_db';
   static const String _feedbackKey = 'secure_feedback_db';
 
-  /// Save Patient locally with Encryption
-  static Future<void> savePatient(PatientModel patient) async {
-    final prefs = await SharedPreferences.getInstance();
-    
-    // Get existing
-    final encryptedData = prefs.getString(_patientsKey);
-    List<dynamic> patientsList = [];
-    if (encryptedData != null) {
-      final decrypted = SecurityService.decryptData(encryptedData);
-      try {
-        patientsList = jsonDecode(decrypted);
-      } catch (_) {}
-    }
-
-    // Add new patient
-    final existingIndex = patientsList.indexWhere((p) => p['id'] == patient.id);
-    if (existingIndex >= 0) {
-      patientsList[existingIndex] = patient.toMap();
-    } else {
-      patientsList.add(patient.toMap());
-    }
-
-    // Encrypt and save
-    final newEncrypted = SecurityService.encryptData(jsonEncode(patientsList));
-    await prefs.setString(_patientsKey, newEncrypted);
-  }
-
-  /// Get all Patients locally
-  static Future<List<PatientModel>> getPatients() async {
-    final prefs = await SharedPreferences.getInstance();
-    final encryptedData = prefs.getString(_patientsKey);
-    if (encryptedData == null) return [];
-
-    final decrypted = SecurityService.decryptData(encryptedData);
-    try {
-      final List<dynamic> patientsList = jsonDecode(decrypted);
-      return patientsList.map((e) => PatientModel.fromMap(e)).toList();
-    } catch (_) {
-      return [];
-    }
-  }
+// Removed patient methods
 
   /// Save Scan Result locally
   static Future<void> saveScanResult(ScanResult result) async {
@@ -85,21 +45,7 @@ class LocalDatabaseService {
     }
   }
 
-  /// Get Patient Scans locally
-  static Future<List<ScanResult>> getPatientScans(String patientId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final encryptedData = prefs.getString(_scansKey);
-    if (encryptedData == null) return [];
-
-    final decrypted = SecurityService.decryptData(encryptedData);
-    try {
-      final List<dynamic> scansList = jsonDecode(decrypted);
-      final results = scansList.map((e) => ScanResult.fromMap(e)).toList();
-      return results.where((r) => r.patientId == patientId).toList();
-    } catch (_) {
-      return [];
-    }
-  }
+// Removed getPatientScans
 
   /// Save Feedback locally
   static Future<void> saveFeedback(int rating, String comment) async {

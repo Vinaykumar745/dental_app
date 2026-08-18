@@ -5,10 +5,13 @@ import 'theme/app_theme.dart';
 import 'services/auth_state.dart';
 import 'services/localization_service.dart';
 
+import 'services/api_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AuthState.load();
   await AppLocalizations.load();
+  ApiService.wakeUpBackend(); // Wake up the sleeping backend in the background
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const DentalApp());
 }

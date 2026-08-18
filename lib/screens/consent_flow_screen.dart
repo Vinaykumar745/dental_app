@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
-import 'patient_form_screen.dart';
+import 'image_instructions_screen.dart';
 
 class ConsentFlowScreen extends StatefulWidget {
   const ConsentFlowScreen({super.key});
@@ -17,7 +17,7 @@ class _ConsentFlowScreenState extends State<ConsentFlowScreen> {
   void _onNext() {
     if (_allAgreed) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const PatientFormScreen()),
+        MaterialPageRoute(builder: (_) => const ImageInstructionsScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -179,7 +179,7 @@ class _ConsentFlowScreenState extends State<ConsentFlowScreen> {
                   ),
                   _buildInfoCard(
                     title: 'AI is NOT a Diagnosis',
-                    text: 'The AI output is ONLY AN AID for your doctor. It can be wrong. Only a biopsy examined by a pathologist can diagnose or rule out cancer.',
+                    text: 'The AI output is ONLY AN AID for screening. It can be wrong. Only a professional dental evaluation can diagnose or rule out oral issues.',
                     icon: Icons.warning_amber_rounded,
                     color: AppTheme.warning,
                     isDark: isDark, textColor: textColor, textGreyColor: textGreyColor,

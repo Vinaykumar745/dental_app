@@ -1,7 +1,6 @@
 enum RiskLevel { low, moderate, high }
 
 class ScanResult {
-  final String patientId;
   final double cancerProbability;
   final String lesionType;
   final List<String> lesionLocations;
@@ -14,7 +13,6 @@ class ScanResult {
   final double modelConfidenceScore; // NEW: Overall confidence score (0-100)
 
   ScanResult({
-    required this.patientId,
     required this.cancerProbability,
     required this.lesionType,
     required this.lesionLocations,
@@ -29,7 +27,6 @@ class ScanResult {
 
   Map<String, dynamic> toMap() {
     return {
-      'patientId': patientId,
       'cancerProbability': cancerProbability,
       'lesionType': lesionType,
       'lesionLocations': lesionLocations,
@@ -61,7 +58,6 @@ class ScanResult {
         .toList();
 
     return ScanResult(
-      patientId: map['patientId'] ?? '',
       cancerProbability: (map['cancerProbability'] ?? 0).toDouble(),
       lesionType: map['lesionType'] ?? '',
       lesionLocations: List<String>.from(map['lesionLocations'] ?? []),
