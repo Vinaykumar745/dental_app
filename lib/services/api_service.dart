@@ -169,12 +169,16 @@ class ApiService {
     required ScanResult result,
   }) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      List<String> scansJson = prefs.getStringList('local_scans') ?? [];
+      scansJson.add(jsonEncode(result.toMap()));
+      await prefs.setStringList('local_scans', scansJson);
+
       final headers = await _authHeaders();
       final body = jsonEncode(result.toMap());
-      final response = await http.post(Uri.parse('$baseUrl/scans'), headers: headers, body: body);
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 200) return ApiResult(success: true, data: data);
-      return ApiResult(success: false, error: data['detail'] ?? 'Failed to save scan');
+      http.post(Uri.parse('$baseUrl/scans'), headers: headers, body: body).catchError((_) => http.Response('', 500));
+      
+      return ApiResult(success: true, data: {"message": "Saved successfully"});
     } catch (e) {
       return ApiResult(success: false, error: e.toString());
     }
@@ -182,12 +186,11 @@ class ApiService {
 
   static Future<ApiResult> getMyScans() async {
     try {
-      final headers = await _authHeaders();
-      final response = await http.get(Uri.parse('$baseUrl/scans'), headers: headers);
-      if (response.statusCode == 200) {
-        return ApiResult(success: true, data: jsonDecode(response.body));
-      }
-      return ApiResult(success: false, error: 'Failed to fetch your scans');
+      final prefs = await SharedPreferences.getInstance();
+      List<String> scansJson = prefs.getStringList('local_scans') ?? [];
+      List<dynamic> localScans = scansJson.map((e) => jsonDecode(e)).toList();
+
+      return ApiResult(success: true, data: localScans);
     } catch (e) {
       return ApiResult(success: false, error: e.toString());
     }

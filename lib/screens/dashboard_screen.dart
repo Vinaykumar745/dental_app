@@ -447,7 +447,10 @@ class _HomeTab extends StatelessWidget {
                 ),
               )
             else
-              ...history.map((item) => _ScanCard(item: item)),
+              ...history.map((item) => GestureDetector(
+                onTap: () => _showScanDetail(context, item),
+                child: _ScanCard(item: item),
+              )),
             const SizedBox(height: 80),
           ],
         ),
@@ -653,7 +656,7 @@ class _PatientsTabState extends State<_PatientsTab> {
                               ),
                             ],
                           ),
-                          onTap: () => _showDetail(context, item),
+                          onTap: () => _showScanDetail(context, item),
                         ),
                       );
                     },
@@ -663,8 +666,9 @@ class _PatientsTabState extends State<_PatientsTab> {
       ],
     );
   }
+}
 
-  void _showDetail(BuildContext context, _HistoryItem item) {
+void _showScanDetail(BuildContext context, _HistoryItem item) {
     final rc = item.result.riskLevel == RiskLevel.high
         ? AppTheme.danger
         : item.result.riskLevel == RiskLevel.moderate
@@ -847,7 +851,6 @@ class _PatientsTabState extends State<_PatientsTab> {
       ),
     );
   }
-}
 
 // ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
 // PROFILE TAB
