@@ -30,7 +30,11 @@ class AuthState {
     _avatarPath = null;
     _userAge = null;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    await prefs.remove('auth_token');
+    await prefs.remove('user_name');
+    await prefs.remove('user_email');
+    await prefs.remove('avatar_path');
+    await prefs.remove('user_age');
   }
 
   static Future<void> save({
